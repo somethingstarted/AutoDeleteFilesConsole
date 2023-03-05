@@ -16,6 +16,7 @@ typedef   std::int8_t int8;
 
 namespace fs = std::filesystem;
 using chrono_ftt = std::filesystem::file_time_type;
+using chrono_duration = std::chrono::system_clock::duration;
 
 int CreateListFromFiles();
 int8 CheckHDDSizeAndSpace(fs::path, bool);
@@ -24,6 +25,8 @@ void SortListChronologically();
 void CheckForDeletedFilesInVector();
 int64 find_greatest(std::string, std::string, std::string);
 std::string IntergerWithCommas(int64 vv);
+int64 ListFolderIndex(bool);
+signed long long GetFileAge(chrono_ftt);
 
 
 struct FileMetaData
@@ -36,10 +39,10 @@ public:
 	fs::path FileName;
 	fs::path FileExtension;
 	bool HasPermissionToEdit;	//convert these bools to bitwise someday
-	bool IsFlaggedForDeletion;
+	bool IsFlaggedForNextDeletion;
 	bool FlaggedForSaving;		//never delete, move to different folder?
 	unsigned long long int FileSizeKB;
-	chrono_ftt FileLastModified;
+	chrono_ftt TimeLastModified;
 
 };
 

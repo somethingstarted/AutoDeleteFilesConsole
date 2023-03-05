@@ -69,14 +69,14 @@ int CreateListFromFiles(fs::path const& dir)
 		metadata.HasPermissionToEdit = static_cast<bool>(fs::status(entry).permissions());
 
 			//flagged for deletion (decided later)
-		metadata.IsFlaggedForDeletion = false;
+		metadata.IsFlaggedForNextDeletion = false;
 
 			//file size
 		unsigned long long int fileSize = static_cast<int>(fs::file_size(entry.path()) / 1024);
 		metadata.FileSizeKB = fileSize;
 
 			//date last modified
-		metadata.FileLastModified = fs::last_write_time(entry.path());
+		metadata.TimeLastModified = fs::last_write_time(entry.path());
 
 			//list files as they are found.
 		/*std::cout << "#" << metadata.OriginalFileOrder << "\t" << metadata.FileName << metadata.FileExtension
@@ -250,19 +250,36 @@ std::tuple <int16, int16, int16>  GetLengthOf()
 }
 
 
-int64 ListFolderIndex(bool DisplayFileAge)		//add how many days old a file is. 
+signed long long GetFileAge(chrono_ftt TimeLastModified2) //time last modified //increase int bit count when time numbers fuck up
 {
-	GetLengthOf();
+
 
 	// Convert the FileLastModifiedTime to a duration since the epoch
-	auto duration_since_epoch = std::chrono::duration_cast<std::chrono::system_clock::duration>(metadata.FileLastModified.time_since_epoch());
+	auto duration_since_epoch = std::chrono::duration_cast<std::chrono::system_clock::duration>(TimeLastModified2.time_since_epoch());
 
 	// Construct a time_point object from the duration since the epoch
 	auto LastModified = std::chrono::time_point<std::chrono::system_clock>(duration_since_epoch);
 
-	//auto LastModified = std::chrono::time_point<std::chrono::system_clock>(metadata.FileLastModified);
+	//auto LastModified = std::chrono::time_point<std::chrono::system_clock>(metadata.TimeLastModified);
 	auto TimeRightNow = std::chrono::system_clock::now();
-	auto FileAge = (TimeRightNow - LastModified);
+	auto FileAgeRaw = (TimeRightNow - LastModified);
+
+	/*auto FileAgeDaysChrono = std::chrono::duration_cast<std::chrono::days>(FileAgeRaw);*/
+
+	auto FileAgeDaysChrono = std::chrono::time_point_cast<std::chrono::days>(TimeRightNow) - std::chrono::time_point_cast<std::chrono::days>(LastModified);
+	signed long long FileAgeDays = FileAgeDaysChrono.count();
+
+
+	FileAgeDays = FileAgeDaysChrono.count();
+
+
+	return FileAgeDays;
+}
+
+int64 ListFolderIndex(bool DisplayFileAge)		 
+{
+	GetLengthOf();
+
 
 	int16 sizeAAAA = std::get<0>(GetLengthOf());
 	int16 sizeBBBB = std::get<1>(GetLengthOf());
@@ -281,12 +298,14 @@ int64 ListFolderIndex(bool DisplayFileAge)		//add how many days old a file is.
 		std::cout << std::right << std::setw(sizeBBBB) << metadata.FileName.string();
 		std::cout << "  ";
 		std::cout << std::right << std::setw(sizeCCCC) << metadata.FileSizeKB;
-		std::cout << "    " << std::format("{:%a %F %r }", metadata.FileLastModified) << "\n";
+		std::cout << "    " << std::format("{:%a %F %r }", metadata.TimeLastModified);
 		 
 		if (DisplayFileAge == true)
 		{
-			//how many old a file is
+			int64 FileAgeDays2 = GetFileAge(metadata.TimeLastModified);
+			std::cout << "   File Age: " << FileAgeDays2;
 		}
+		std::cout << "\n";
 	}
 	return 0;
 }
@@ -300,7 +319,7 @@ void SortListChronologically()
 
 	std::sort(FolderIndex.begin(), FolderIndex.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
 	{
-		return struct1.FileLastModified < struct2.FileLastModified;
+		return struct1.TimeLastModified < struct2.TimeLastModified;
 	});
 
 
@@ -348,7 +367,7 @@ int DirectoryIndexer()  //entry point
 	/*std::cin.get();*/
 	SortListChronologically();
 	std::cout << "\toldest:\n";
-	ListFolderIndex();
+	ListFolderIndex(true);
 	std::cout << "\tnewest ^ \n";
 
 
@@ -359,7 +378,7 @@ int DirectoryIndexer()  //entry point
 	CheckForDeletedFilesInVector();
 
 	CreateListFromFiles(MyPath);
-	ListFolderIndex();
+	ListFolderIndex(true);
 
 	return 0;
 }
