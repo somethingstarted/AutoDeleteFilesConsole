@@ -1,10 +1,7 @@
 #include "DirectoryIndexer.h"
 
 
-typedef   std::int64_t int64;
-typedef   std::int32_t int32;
-typedef   std::int16_t int16;
-typedef   std::int8_t int8;
+
 
 std::vector<FileMetaData> FolderIndex{};
 int64 SizeOfDisk;
@@ -250,7 +247,7 @@ std::tuple <int16, int16, int16>  GetLengthOf()
 }
 
 
-signed long long GetFileAge(chrono_ftt TimeLastModified2) //time last modified //increase int bit count when time numbers fuck up
+uint64 GetFileAge(chrono_ftt TimeLastModified2) //time last modified //increase int bit count when time numbers fuck up
 {
 
 
@@ -302,7 +299,7 @@ int64 ListFolderIndex(bool DisplayFileAge)
 		 
 		if (DisplayFileAge == true)
 		{
-			int64 FileAgeDays2 = GetFileAge(metadata.TimeLastModified);
+			uint64 FileAgeDays2 = GetFileAge(metadata.TimeLastModified);
 			std::cout << "   File Age: " << FileAgeDays2;
 		}
 		std::cout << "\n";
