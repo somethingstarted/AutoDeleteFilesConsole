@@ -3,21 +3,14 @@
 
 
 
-std::vector<FileMetaData> FolderIndex{};
+std::vector<FileMetaData> FolderIndex{}; //eventually store this index into a file.
 int64 SizeOfDisk;
 int64 FreeSpace;
 int64 AvaliableSpace;
 FileMetaData metadata;
 
 
-//It is considered good C++ style to avoid short, int, long etc.and instead use :
-//
-//std::int8_t   # exactly  8 bits
-//std::int16_t  # exactly 16 bits
-//std::int32_t  # exactly 32 bits
-//std::int64_t  # exactly 64 bits
-//
-//std::size_t   # can hold all possible object sizes, used for indexing
+
 
 void CheckForDeletedFilesInVector()
 {
@@ -34,11 +27,30 @@ void CheckForDeletedFilesInVector()
 		}
 
 	}
+	std::cout << "\n";
+	return;
+}
+
+void CalculateDailySpaceUsage()
+{
+	/*
+	work through file list
+	 - add first day and date to a temp buffer,
+	 - do while the next entry is from the same day, add space size to the buffer,
+	 - if/when the next entry is different:
+			-pushback buffer 
+
+
+	 - when it is done: pushback this vector to a global filesize usage tracking vector. eventually this vector will need to be stored in a file. 
+			for now it'll only last while the program runs. 
+	*/
 	return;
 }
 
 int CreateListFromFiles(fs::path const& dir)
 {
+	std::cout << "\n\nBuild files in the directory... " << "\n"
+		<< dir.string() << "\n";
 
 	FileMetaData metadata = {};
 
@@ -114,21 +126,12 @@ int CreateListFromFiles(fs::path const& dir)
 
 	}
 	
+	return 0;
 }
 
 
 
-//int64 find_greatest(std::string a, std::string b, std::string c)
-//{
-//	std::string x = max(a, max(b, c));
-//	std::cout << x << " is greatest";
-//
-//	std::cout << "\n\n";
-//
-//	return x.size();
-//}
-
-std::string IntergerWithCommas(int64 vv)
+std::string IntergerWithCommas(int64 vv)		//move to seperate class named "formatting" someday. 
 {
 	std::string s = std::to_string(vv);
 
@@ -142,7 +145,34 @@ std::string IntergerWithCommas(int64 vv)
 	return s;
 }
 
+int64 GetPercentage(int64 a, int64 b, bool IsVerbose) //stupid. doesn't work.
+{
+	
+	double Aa = a;
+	double Bb = b;
 
+	while (Aa >= 100 && Bb >= 100)
+	{
+		Aa = Aa / static_cast<double>(100);
+		Bb = Bb / static_cast<double>(100);
+
+		if (IsVerbose == true)
+		{
+			std::cout << Aa << " / " << Bb << "\n";
+		}
+		
+	}
+
+	int64 result = 100 - ((Aa * 100) / Bb);
+
+
+	if (IsVerbose == true)
+	{
+		std::cout << "result: " << result << "\n";
+	}
+
+	return result;
+}
 
 int8  CheckHDDSizeAndSpace(fs::path, bool IsVerbose)
 {
@@ -157,9 +187,12 @@ int8  CheckHDDSizeAndSpace(fs::path, bool IsVerbose)
 	 SizeOfDisk = static_cast<int64>(MyDiskSpace.capacity);
 	 FreeSpace = static_cast<int64>(MyDiskSpace.free);
 	 AvaliableSpace = static_cast<int64>(MyDiskSpace.available);
-	 int8 HDDPercentageLeft = ((FreeSpace / SizeOfDisk) * 100);
 
-	 if (IsVerbose == true)
+	 double HDDPercentageLeft = GetPercentage(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
+
+	 //uint64 HDDPercentageLeft = ((FreeSpace * 100) / (FreeSpace + SizeOfDisk)); //unreliable. different every time
+
+	 if (IsVerbose == 1)
 	 {
 		 const int ArrayLength = 3;
 		 std::string DiskSizeNumbers[ArrayLength]
@@ -177,7 +210,8 @@ int8  CheckHDDSizeAndSpace(fs::path, bool IsVerbose)
 		 std::stringstream OSSb;
 		 std::stringstream OSS3;
 		 std::stringstream OSSc;
-
+		 std::stringstream OSS4;
+		 std::stringstream OSSd;
 
 		 OSS1 << "Size Of Disk\t\t";
 		 OSSa << std::right << std::setw(width) << IntergerWithCommas(SizeOfDisk) << "\n";
@@ -185,10 +219,14 @@ int8  CheckHDDSizeAndSpace(fs::path, bool IsVerbose)
 		 OSSb << std::right << std::setw(width) << IntergerWithCommas(FreeSpace) << "\n";
 		 OSS3 << "Avaliable Space:\t";
 		 OSSc << std::right << std::setw(width) << IntergerWithCommas(AvaliableSpace) << "\n";
-		 OSS3 << "Disk Percent Left:\t";
-		 OSSc << std::right << std::setw(width) << IntergerWithCommas(AvaliableSpace) << "\n";
+		 OSS4 << "Disk Percent Left:\t";
+		 OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
 
-		 s = OSS1.str() + OSSa.str() + OSS2.str() + OSSb.str() + OSS3.str() + OSSc.str();
+		 s = OSS1.str() + OSSa.str() + OSS2.str() + OSSb.str() + OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
+
+		 std::cout << s;
+
+		 std::this_thread::sleep_for(std::chrono::seconds(4));
 	 }
 
 
@@ -247,33 +285,21 @@ std::tuple <int16, int16, int16>  GetLengthOf()
 }
 
 
-uint64 GetFileAge(chrono_ftt TimeLastModified2) //time last modified //increase int bit count when time numbers fuck up
+std::stringstream GetFileAge(chrono_ftt TimeLastModified2) //time last modified 
 {
+		auto diff = std::chrono::file_clock::now() - TimeLastModified2;
 
+		auto diffDaysOld = std::chrono::round<std::chrono::days>(diff);
+		//auto diffMonthsOld = std::chrono::round<std::chrono::months>(diff);
+		//auto diffYearsOld = std::chrono::round<std::chrono::years>(diff);
+		std::stringstream ss_buffer;	
 
-	// Convert the FileLastModifiedTime to a duration since the epoch
-	auto duration_since_epoch = std::chrono::duration_cast<std::chrono::system_clock::duration>(TimeLastModified2.time_since_epoch());
+			std::cout << diffDaysOld << " old";
 
-	// Construct a time_point object from the duration since the epoch
-	auto LastModified = std::chrono::time_point<std::chrono::system_clock>(duration_since_epoch);
-
-	//auto LastModified = std::chrono::time_point<std::chrono::system_clock>(metadata.TimeLastModified);
-	auto TimeRightNow = std::chrono::system_clock::now();
-	auto FileAgeRaw = (TimeRightNow - LastModified);
-
-	/*auto FileAgeDaysChrono = std::chrono::duration_cast<std::chrono::days>(FileAgeRaw);*/
-
-	auto FileAgeDaysChrono = std::chrono::time_point_cast<std::chrono::days>(TimeRightNow) - std::chrono::time_point_cast<std::chrono::days>(LastModified);
-	signed long long FileAgeDays = FileAgeDaysChrono.count();
-
-
-	FileAgeDays = FileAgeDaysChrono.count();
-
-
-	return FileAgeDays;
+	return ss_buffer;
 }
 
-int64 ListFolderIndex(bool DisplayFileAge)		 
+int64 ListFolderIndex(bool DisplayFileAge, bool DisplayFileSize, bool DisplayLastModifiedTime, bool DisplayOriginalFileOrder) //replace with bitwise please please
 {
 	GetLengthOf();
 
@@ -288,19 +314,30 @@ int64 ListFolderIndex(bool DisplayFileAge)
 	for (auto& metadata : FolderIndex) 
 	{
 
+				// extract this someday so i can format files once and be done with it, then just feed all through this: 
+		if (DisplayOriginalFileOrder == true)
+		{
+			std::cout << "#";
+			std::cout << std::right << std::setw(sizeAAAA) << IntergerWithCommas(metadata.OriginalFileOrder);
+		}
 
-		std::cout << "#";
-		std::cout << std::right << std::setw(sizeAAAA) << metadata.OriginalFileOrder;
 		std::cout << "  ";
-		std::cout << std::right << std::setw(sizeBBBB) << metadata.FileName.string();
-		std::cout << "  ";
-		std::cout << std::right << std::setw(sizeCCCC) << metadata.FileSizeKB;
-		std::cout << "    " << std::format("{:%a %F %r }", metadata.TimeLastModified);
+		std::cout << std::right << std::setw(sizeBBBB) << metadata.FileName.string() << "  ";
+
+		if (DisplayFileSize == true)
+		{
+			std::cout << "  ";
+			std::cout << std::right << std::setw(sizeCCCC) << IntergerWithCommas(metadata.FileSizeKB) << " KB";
+		}
+		if (DisplayLastModifiedTime == true)
+		{
+			std::cout << "    " << std::format("{:%a %F %r }", metadata.TimeLastModified);
+		}
 		 
 		if (DisplayFileAge == true)
 		{
-			uint64 FileAgeDays2 = GetFileAge(metadata.TimeLastModified);
-			std::cout << "   File Age: " << FileAgeDays2;
+			auto FileAgeDays2 = GetFileAge(metadata.TimeLastModified);
+			std::cout << "\t\t" << FileAgeDays2.str();
 		}
 		std::cout << "\n";
 	}
@@ -312,7 +349,7 @@ int64 ListFolderIndex(bool DisplayFileAge)
 
 void SortListChronologically()
 {
-
+	std::cout << "Sorting chronologically: \n";
 
 	std::sort(FolderIndex.begin(), FolderIndex.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
 	{
@@ -320,14 +357,14 @@ void SortListChronologically()
 	});
 
 
-	std::cout << "Sorted chronologically: \n";
+
 
 	return;
 }
 
 void SortListAlphabetically()
 {
-
+	std::cout << "Sorting alpabetically: \n";
 
 	std::sort(FolderIndex.begin(), FolderIndex.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
 	{
@@ -335,7 +372,7 @@ void SortListAlphabetically()
 	});
 
 
-	std::cout << "Sorted chronologically: \n";
+
 
 	return;
 }
@@ -345,37 +382,36 @@ void SortListAlphabetically()
 int DirectoryIndexer()  //entry point 
 {
 	auto MyPath = fs::current_path();
-	int8 DiskPercentageLeft = CheckHDDSizeAndSpace(MyPath, true);
+	int8 DiskPercentageLeft = CheckHDDSizeAndSpace(MyPath, false);
 	fs::path::auto_format(MyPath);
 
-	std::cout << "\n\nBuild files in the directory... " << "\n"
-		<< MyPath.string() << "\n";
-
-	CreateListFromFiles(MyPath);
 
 
-	std::cout << "\n\nlist files in the vector: " << "\n"
-		<< MyPath << "\n";
-	//std::cin.get();
-	//ListFolderIndex();
-
-
-	std::cout << "\nsort by time: " << "\n";
-	/*std::cin.get();*/
-	SortListChronologically();
-	std::cout << "\toldest:\n";
-	ListFolderIndex(true);
-	std::cout << "\tnewest ^ \n";
-
-
-	std::cout << "\n\t CHANGE SOMETHING IN THE FOLDER! **** \n\n";
-
-	std::cin.get();
 
 	CheckForDeletedFilesInVector();
 
+
+
 	CreateListFromFiles(MyPath);
-	ListFolderIndex(true);
+	SortListChronologically();
+
+	ListFolderIndex(true, false, false, false);
+
+
+
+
+	//average daily file size amount written, for files in database are:
+
+
+
+
+	//HDD usage is / # days left expected before deletion required: 
+
+	
+
+	//the oldest file is: 
+
+
 
 	return 0;
 }

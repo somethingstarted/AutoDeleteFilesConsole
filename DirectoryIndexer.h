@@ -29,9 +29,10 @@ void SortListChronologically();
 void CheckForDeletedFilesInVector();
 int64 find_greatest(std::string, std::string, std::string);
 std::string IntergerWithCommas(int64 vv);
-int64 ListFolderIndex(bool);
-uint64 GetFileAge(chrono_ftt);
-
+int64 ListFolderIndex(bool, bool, bool, bool);
+std::stringstream GetFileAge(chrono_ftt);
+int64 GetPercentage(int64, int64, bool);
+void CalculateDailySpaceUsage();
 
 struct FileMetaData
 {
