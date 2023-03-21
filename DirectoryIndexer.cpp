@@ -8,7 +8,7 @@ int64 SizeOfDisk;
 int64 FreeSpace;
 int64 AvaliableSpace;
 FileMetaData metadata;
-
+std::vector<FileMetaData> DailyAverageUsage{};
 
 
 
@@ -31,8 +31,68 @@ void CheckForDeletedFilesInVector()
 	return;
 }
 
-void CalculateDailySpaceUsage()
+void CalculateDailySpaceUsage() //unfinished
 {
+	
+	
+	int64 BufferSize = 0;
+	chrono_ftt BufferDay1{};
+
+	if (!FolderIndex.empty())
+	{
+		std::cout << "calculating daily space usage:\n";
+		BufferDay1 = std::chrono::floor<std::chrono::days>(FolderIndex.at(0).TimeLastModified);
+	}
+	else
+		std::cerr << "Calculating daily usage failed for some reason.\n";
+
+	
+
+	int TotalFilesCounted = 1;
+	int FilesSameDay = 0;
+
+	for (auto& metadata : FolderIndex)
+	{
+		chrono_ftt BufferDay2 = std::chrono::floor<std::chrono::days>(metadata.TimeLastModified); //this file
+		
+		
+
+
+
+		if (BufferDay1 != BufferDay2)
+		{
+			FilesSameDay = 0;
+			BufferSize = metadata.FileSizeKB;
+		}
+		
+		if (BufferDay1 == BufferDay2)
+		{
+			BufferSize += metadata.FileSizeKB;
+			//FilesSameDay++;
+		}
+
+
+
+		std::cout << "TotalFilesCounted = " << TotalFilesCounted << "\t\t FilesSameDay = " << FilesSameDay
+			<< "\tBufferSize KB: " << std::right << std::setw(16) << IntergerWithCommas(BufferSize) << "\n";
+
+		if (BufferDay2 == BufferDay1)
+		{
+			
+			FilesSameDay++;
+		}
+
+		BufferDay1 = BufferDay2; // 1 is last file for next time
+
+
+		
+			//resetting for next round
+		TotalFilesCounted++;
+	
+				//days were not same, so...
+
+		
+	}
 	/*
 	work through file list
 	 - add first day and date to a temp buffer,
@@ -41,13 +101,48 @@ void CalculateDailySpaceUsage()
 			-pushback buffer 
 
 
-	 - when it is done: pushback this vector to a global filesize usage tracking vector. eventually this vector will need to be stored in a file. 
-			for now it'll only last while the program runs. 
+	 - later, not now, store a log of daily storage space usage. 
 	*/
+
+
+
 	return;
 }
 
-int CreateListFromFiles(fs::path const& dir)
+bool HasWritePermissions(const fs::path& entry) {
+	if (fs::exists(entry)) {
+		fs::perms permissions = fs::status(entry).permissions();
+
+		// Check if the file has write permissions for owner, group, or others
+		bool owner_write = (permissions & fs::perms::owner_write) != fs::perms::none;
+		bool group_write = (permissions & fs::perms::group_write) != fs::perms::none;
+		bool others_write = (permissions & fs::perms::others_write) != fs::perms::none;
+
+		return owner_write || group_write || others_write;
+	}
+	else {
+		std::cerr << "File does not exist!" << std::endl;
+		return false;
+	}
+}
+
+/*bool GetPermissions(fs::path const& entry)
+{
+	//https://en.cppreference.com/w/cpp/filesystem/perms
+	bool answer{};
+
+	typedef std::filesystem::perms PP;
+	
+	std::filesystem::status(entry)
+
+	if (entry == PP::group_exec) //no idea. 
+
+
+	return answer;
+}*/
+
+
+int CreateListFromFiles(fs::path const& dir) /******************************************************************/
 {
 	std::cout << "\n\nBuild files in the directory... " << "\n"
 		<< dir.string() << "\n";
@@ -75,21 +170,32 @@ int CreateListFromFiles(fs::path const& dir)
 		metadata.FileExtension = entry.path().extension();
 
 			//have permission to edit
-		metadata.HasPermissionToEdit = static_cast<bool>(fs::status(entry).permissions());
+		//std::cerr << "before: " << std::bitset<16>(metadata.FileChoicesFlags) << "\n";
+		if (HasWritePermissions(entry) == true)	
+			metadata.FileChoicesFlags = metadata.FileChoicesFlags | FileFlags::ff_CanBeWrittenTo;
+		else
+			metadata.FileChoicesFlags = metadata.FileChoicesFlags & ~FileFlags::ff_CanBeWrittenTo;
 
-			//flagged for deletion (decided later)
-		metadata.IsFlaggedForNextDeletion = false;
+
+				//these shouldn't matter, since it's not supposed to re-add new files to the directory. 
+				//however, if it's found that it's re-adding files, it needs to be fixed, because it can't 
+				// work if it's constantly resetting files every few hours when it runs.
+				// 
+				//set as NOT ready to be deleted. that's for a different function. this one only adds to list. 
+		metadata.FileChoicesFlags = metadata.FileChoicesFlags & ~FileFlags::ff_IsReadyToBeDeleted;
+				//set ff_ShouldBeArchived as "no / 0" for now. different function chooses that one.
+		metadata.FileChoicesFlags = metadata.FileChoicesFlags & ~FileFlags::ff_ShouldBeArchived;
+
+
+	
 
 			//file size
-		unsigned long long int fileSize = static_cast<int>(fs::file_size(entry.path()) / 1024);
-		metadata.FileSizeKB = fileSize;
+		uint64 FileSize = static_cast<int>(fs::file_size(entry.path()) / 1024);
+		metadata.FileSizeKB = FileSize;
 
 			//date last modified
 		metadata.TimeLastModified = fs::last_write_time(entry.path());
 
-			//list files as they are found.
-		/*std::cout << "#" << metadata.OriginalFileOrder << "\t" << metadata.FileName << metadata.FileExtension
-			<< "\n\t"; */
 
 				//ignore files with these qualities, no matter what -- swish cheese method. be careful
 		std::vector<std::string> IgnoreList = { ".exe", ".pdb"};
@@ -123,6 +229,8 @@ int CreateListFromFiles(fs::path const& dir)
 		{
 			metadata.OriginalFileOrder = 0;
 		}
+			//reset bits back to zero?
+		metadata.FileChoicesFlags = metadata.FileChoicesFlags & ~FileFlags::ff_CanBeWrittenTo;
 
 	}
 	
@@ -131,19 +239,19 @@ int CreateListFromFiles(fs::path const& dir)
 
 
 
-std::string IntergerWithCommas(int64 vv)		//move to seperate class named "formatting" someday. 
-{
-	std::string s = std::to_string(vv);
-
-	int64 n = s.length() - 3;
-	int64 end = (vv >= 0) ? 0 : 1; // Support for negative numbers
-	while (n > end) {
-		s.insert(n, ",");
-		n -= 3;
-	}
-
-	return s;
-}
+//std::string IntergerWithCommas(int64 vv)		//move to seperate class named "formatting" someday. 
+//{
+//	std::string s = std::to_string(vv);
+//
+//	int64 n = s.length() - 3;
+//	int64 end = (vv >= 0) ? 0 : 1; // Support for negative numbers
+//	while (n > end) {
+//		s.insert(n, ",");
+//		n -= 3;
+//	}
+//
+//	return s;
+//}
 
 int64 GetPercentage(int64 a, int64 b, bool IsVerbose) //stupid. doesn't work.
 {
@@ -353,7 +461,7 @@ void SortListChronologically()
 
 	std::sort(FolderIndex.begin(), FolderIndex.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
 	{
-		return struct1.TimeLastModified < struct2.TimeLastModified;
+		return struct1.TimeLastModified > struct2.TimeLastModified;
 	});
 
 
@@ -397,7 +505,7 @@ int DirectoryIndexer()  //entry point
 
 	ListFolderIndex(true, false, false, false);
 
-
+	// CalculateDailySpaceUsage(); // unfinished
 
 
 	//average daily file size amount written, for files in database are:

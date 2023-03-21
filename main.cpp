@@ -6,6 +6,8 @@ int CreateListFromFiles(fs::path const& dir);
 int DirectoryIndexer();
 
 
+
+
 void IsThisWindows()
 {
 

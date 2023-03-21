@@ -111,7 +111,7 @@
     <OutDir>.\BuildDirectory</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>\\DESKTOP-4DGLD6C\SecurityDrive\BlueIris\New</OutDir>
+    <OutDir>\\ALLANO-LAPTOP\DSecurityDrive\BlueIris\Storage</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='the release version|x64'">
     <OutDir>.\BuildDirectory</OutDir>
@@ -212,10 +212,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DirectoryIndexer.h" />
+    <ClInclude Include="Formatting.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectoryIndexer.cpp" />
+    <ClCompile Include="Formatting.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

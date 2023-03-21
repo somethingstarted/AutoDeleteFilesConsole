@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <Windows.h>
 #include <conio.h>
-
+#include "Formatting.h"
 
 
 class MainClass

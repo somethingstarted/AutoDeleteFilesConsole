@@ -21,12 +21,18 @@
     <ClInclude Include="DirectoryIndexer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Formatting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DirectoryIndexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Formatting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
