@@ -10,14 +10,16 @@
 #include <tuple>
 #include "Formatting.h"
 
+class DirectoryIndexingClass
+{
+public: 
+	std::string CheckHDDSizeAndSpace(fs::path, bool);
+};
 
 
-namespace fs = std::filesystem;
-using chrono_ftt = std::filesystem::file_time_type;
-using chrono_duration = std::chrono::system_clock::duration;
 
 //int CreateListFromFiles(fs::path);
-int8 CheckHDDSizeAndSpace(fs::path, bool);
+int8 CheckHDDSizeAndSpaceConsole(fs::path, bool);
 int DirectoryIndexer();
 void SortListChronologically();
 void CheckForDeletedFilesInVector();

@@ -126,20 +126,6 @@ bool HasWritePermissions(const fs::path& entry) {
 	}
 }
 
-/*bool GetPermissions(fs::path const& entry)
-{
-	//https://en.cppreference.com/w/cpp/filesystem/perms
-	bool answer{};
-
-	typedef std::filesystem::perms PP;
-	
-	std::filesystem::status(entry)
-
-	if (entry == PP::group_exec) //no idea. 
-
-
-	return answer;
-}*/
 
 
 int CreateListFromFiles(fs::path const& dir) /******************************************************************/
@@ -239,20 +225,6 @@ int CreateListFromFiles(fs::path const& dir) /**********************************
 
 
 
-//std::string IntergerWithCommas(int64 vv)		//move to seperate class named "formatting" someday. 
-//{
-//	std::string s = std::to_string(vv);
-//
-//	int64 n = s.length() - 3;
-//	int64 end = (vv >= 0) ? 0 : 1; // Support for negative numbers
-//	while (n > end) {
-//		s.insert(n, ",");
-//		n -= 3;
-//	}
-//
-//	return s;
-//}
-
 int64 GetPercentage(int64 a, int64 b, bool IsVerbose) //stupid. doesn't work.
 {
 	
@@ -282,12 +254,11 @@ int64 GetPercentage(int64 a, int64 b, bool IsVerbose) //stupid. doesn't work.
 	return result;
 }
 
-int8  CheckHDDSizeAndSpace(fs::path, bool IsVerbose)
+std::string  DirectoryIndexingClass::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new UI version
 {
-
 	std::error_code ec;
 	auto MyPath = fs::current_path();
-	std::string s = "";
+	std::string s{};
 
 	const std::filesystem::space_info si = std::filesystem::space(MyPath, ec);
 
@@ -332,18 +303,69 @@ int8  CheckHDDSizeAndSpace(fs::path, bool IsVerbose)
 
 		 s = OSS1.str() + OSSa.str() + OSS2.str() + OSSb.str() + OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
 
-		 std::cout << s;
+		 //std::cout << s;
 
 		 std::this_thread::sleep_for(std::chrono::seconds(4));
 	 }
-
-
-
-
-
-	 return HDDPercentageLeft;
+	 return s;
 }
 
+		//legacy CONSOLE version
+int8  CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // legacy
+{
+	std::error_code ec;
+	auto MyPath = fs::current_path();
+	std::string s = "";
+
+	const std::filesystem::space_info si = std::filesystem::space(MyPath, ec);
+
+	fs::space_info MyDiskSpace = std::filesystem::space(MyPath, ec);
+	SizeOfDisk = static_cast<int64>(MyDiskSpace.capacity);
+	FreeSpace = static_cast<int64>(MyDiskSpace.free);
+	AvaliableSpace = static_cast<int64>(MyDiskSpace.available);
+
+	double HDDPercentageLeft = GetPercentage(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
+
+	//uint64 HDDPercentageLeft = ((FreeSpace * 100) / (FreeSpace + SizeOfDisk)); //unreliable. different every time
+
+	if (IsVerbose == 1)
+	{
+		const int ArrayLength = 3;
+		std::string DiskSizeNumbers[ArrayLength]
+		{
+			IntergerWithCommas(SizeOfDisk),
+			IntergerWithCommas(FreeSpace),
+			IntergerWithCommas(AvaliableSpace),
+		};
+
+		int16 width = IntergerWithCommas(SizeOfDisk).size();
+
+		std::stringstream OSS1;
+		std::stringstream OSSa;
+		std::stringstream OSS2;
+		std::stringstream OSSb;
+		std::stringstream OSS3;
+		std::stringstream OSSc;
+		std::stringstream OSS4;
+		std::stringstream OSSd;
+
+		OSS1 << "Size Of Disk\t\t";
+		OSSa << std::right << std::setw(width) << IntergerWithCommas(SizeOfDisk) << "\n";
+		OSS2 << "Free Space\t\t";
+		OSSb << std::right << std::setw(width) << IntergerWithCommas(FreeSpace) << "\n";
+		OSS3 << "Avaliable Space:\t";
+		OSSc << std::right << std::setw(width) << IntergerWithCommas(AvaliableSpace) << "\n";
+		OSS4 << "Disk Percent Left:\t";
+		OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
+
+		s = OSS1.str() + OSSa.str() + OSS2.str() + OSSb.str() + OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
+
+		std::cout << s;
+
+		std::this_thread::sleep_for(std::chrono::seconds(4));
+	}
+	return HDDPercentageLeft;
+}
 
 std::tuple <int16, int16, int16>  GetLengthOf()
 {					
@@ -490,7 +512,7 @@ void SortListAlphabetically()
 int DirectoryIndexer()  //entry point 
 {
 	auto MyPath = fs::current_path();
-	int8 DiskPercentageLeft = CheckHDDSizeAndSpace(MyPath, false);
+	int8 DiskPercentageLeft = CheckHDDSizeAndSpaceConsole(MyPath, false);
 	fs::path::auto_format(MyPath);
 
 

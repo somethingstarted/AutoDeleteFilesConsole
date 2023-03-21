@@ -172,7 +172,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -214,11 +214,13 @@
     <ClInclude Include="DirectoryIndexer.h" />
     <ClInclude Include="Formatting.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectoryIndexer.cpp" />
     <ClCompile Include="Formatting.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
