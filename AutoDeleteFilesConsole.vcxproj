@@ -211,16 +211,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AutoFileDeleter.h" />
     <ClInclude Include="DirectoryIndexer.h" />
+    <ClInclude Include="FileDeleterFrame.h" />
     <ClInclude Include="Formatting.h" />
-    <ClInclude Include="main.h" />
-    <ClInclude Include="UserInterface.h" />
+    <ClInclude Include="OperatingSystemCheck.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoFileDeleter.cpp" />
     <ClCompile Include="DirectoryIndexer.cpp" />
+    <ClCompile Include="FileDeleterFrame.cpp" />
     <ClCompile Include="Formatting.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="UserInterface.cpp" />
+    <ClCompile Include="OperatingSystemCheck.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

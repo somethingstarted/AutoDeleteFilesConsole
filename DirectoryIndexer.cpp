@@ -12,7 +12,7 @@ std::vector<FileMetaData> DailyAverageUsage{};
 
 
 
-void CheckForDeletedFilesInVector()
+void DirIndexing::CheckForDeletedFilesInVector()
 {
 	std::cout << "\n\n\tchecking for deleted files still in Index:\n";
 	for (auto& metadata : FolderIndex)
@@ -31,7 +31,7 @@ void CheckForDeletedFilesInVector()
 	return;
 }
 
-void CalculateDailySpaceUsage() //unfinished
+void DirIndexing::CalculateDailySpaceUsage() //unfinished
 {
 	
 	
@@ -126,6 +126,44 @@ bool HasWritePermissions(const fs::path& entry) {
 	}
 }
 
+			//ConvertToWxArrayString needs a valid overload for each type used in struct FileMetaData
+		//uint64, fs::path, int16, chrono_ftt
+				//just return strait binary for now for the int16
+wxString ConvertToWxArrayString(uint64 Request)
+{
+	wxString mystring = wxString::Format(wxT("%i"), Request);
+
+
+	return mystring;
+}
+
+wxString ConvertToWxArrayString(fs::path Request)
+{
+	std::string pathbuffer = Request.string();
+
+	wxString mystring = wxString::Format(wxT("%i"), pathbuffer);
+
+
+	return mystring;
+
+}
+	
+wxString ConvertToWxArrayString(int16 Request)
+{
+	wxString mystring = wxString::Format(wxT("%i"), Request);
+
+
+	return mystring;
+}
+
+wxString ConvertToWxArrayString(chrono_ftt Request)
+{
+ 
+	wxString mystring = wxString::Format(wxT("%i"), Request);
+
+
+	return mystring;
+}
 
 
 int CreateListFromFiles(fs::path const& dir) /******************************************************************/
@@ -206,8 +244,8 @@ int CreateListFromFiles(fs::path const& dir) /**********************************
 		}
 		
 
-			//don't let metadata go above 1,000.
-		if (metadata.OriginalFileOrder < 1000)
+			//don't let metadata go above 9'999.
+		if (metadata.OriginalFileOrder < 9'999)
 		{
 			metadata.OriginalFileOrder++;
 		}
@@ -225,7 +263,7 @@ int CreateListFromFiles(fs::path const& dir) /**********************************
 
 
 
-int64 GetPercentage(int64 a, int64 b, bool IsVerbose) //stupid. doesn't work.
+int64 DirIndexing::GetPercentageUsed(int64 a, int64 b, bool IsVerbose) //stupid. doesn't work.
 {
 	
 	double Aa = a;
@@ -254,7 +292,7 @@ int64 GetPercentage(int64 a, int64 b, bool IsVerbose) //stupid. doesn't work.
 	return result;
 }
 
-std::string  DirectoryIndexingClass::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new UI version
+std::string  DirIndexing::DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new UI version
 {
 	std::error_code ec;
 	auto MyPath = fs::current_path();
@@ -267,7 +305,7 @@ std::string  DirectoryIndexingClass::CheckHDDSizeAndSpace(fs::path, bool IsVerbo
 	 FreeSpace = static_cast<int64>(MyDiskSpace.free);
 	 AvaliableSpace = static_cast<int64>(MyDiskSpace.available);
 
-	 double HDDPercentageLeft = GetPercentage(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
+	 double HDDPercentageLeft = GetPercentageUsed(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
 
 	 //uint64 HDDPercentageLeft = ((FreeSpace * 100) / (FreeSpace + SizeOfDisk)); //unreliable. different every time
 
@@ -292,16 +330,28 @@ std::string  DirectoryIndexingClass::CheckHDDSizeAndSpace(fs::path, bool IsVerbo
 		 std::stringstream OSS4;
 		 std::stringstream OSSd;
 
-		 OSS1 << "Size Of Disk\t\t";
-		 OSSa << std::right << std::setw(width) << IntergerWithCommas(SizeOfDisk) << "\n";
-		 OSS2 << "Free Space\t\t";
-		 OSSb << std::right << std::setw(width) << IntergerWithCommas(FreeSpace) << "\n";
+				//add more choices later.
+				//default is KB, so you're dividing against KB.
+		 const int OneGB = 1'048'576;
+		 const int DivideBy = OneGB;
+		 std::string UnitsOfMeasure{};
+				//just add the ones you want here. maybe make it an enum or something later idk.
+		 if (DivideBy == OneGB)
+			 UnitsOfMeasure = " GB";
+		 else
+			 UnitsOfMeasure = " KB";
+
+
+		 OSS1 << "Size Of Disk\t";
+		 OSSa << std::right << std::setw(width) << IntergerWithCommas((SizeOfDisk / DivideBy)) << UnitsOfMeasure << "\n";
+		 /*OSS2 << "Free Space\t\t";
+		 OSSb << std::right << std::setw(width) << IntergerWithCommas(FreeSpace) << "\n";*/
 		 OSS3 << "Avaliable Space:\t";
-		 OSSc << std::right << std::setw(width) << IntergerWithCommas(AvaliableSpace) << "\n";
-		 OSS4 << "Disk Percent Left:\t";
+		 OSSc << std::right << std::setw(width) << IntergerWithCommas((AvaliableSpace / DivideBy)) << UnitsOfMeasure << "\n";
+		 OSS4 << "Disk Percent used:\t";
 		 OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
 
-		 s = OSS1.str() + OSSa.str() + OSS2.str() + OSSb.str() + OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
+		 s = OSS1.str() + OSSa.str() + /*OSS2.str() + OSSb.str() +*/ OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
 
 		 //std::cout << s;
 
@@ -311,7 +361,7 @@ std::string  DirectoryIndexingClass::CheckHDDSizeAndSpace(fs::path, bool IsVerbo
 }
 
 		//legacy CONSOLE version
-int8  CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // legacy
+int8  DirIndexing::CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // legacy
 {
 	std::error_code ec;
 	auto MyPath = fs::current_path();
@@ -324,7 +374,7 @@ int8  CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // legacy
 	FreeSpace = static_cast<int64>(MyDiskSpace.free);
 	AvaliableSpace = static_cast<int64>(MyDiskSpace.available);
 
-	double HDDPercentageLeft = GetPercentage(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
+	double HDDPercentageLeft = GetPercentageUsed(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
 
 	//uint64 HDDPercentageLeft = ((FreeSpace * 100) / (FreeSpace + SizeOfDisk)); //unreliable. different every time
 
@@ -415,7 +465,7 @@ std::tuple <int16, int16, int16>  GetLengthOf()
 }
 
 
-std::stringstream GetFileAge(chrono_ftt TimeLastModified2) //time last modified 
+std::stringstream DirIndexing::GetFileAge(chrono_ftt TimeLastModified2) //time last modified 
 {
 		auto diff = std::chrono::file_clock::now() - TimeLastModified2;
 
@@ -429,17 +479,13 @@ std::stringstream GetFileAge(chrono_ftt TimeLastModified2) //time last modified
 	return ss_buffer;
 }
 
-int64 ListFolderIndex(bool DisplayFileAge, bool DisplayFileSize, bool DisplayLastModifiedTime, bool DisplayOriginalFileOrder) //replace with bitwise please please
+int64 DirIndexing::ListFolderIndexConsole(bool DisplayFileAge, bool DisplayFileSize, bool DisplayLastModifiedTime, bool DisplayOriginalFileOrder) //replace with bitwise please please
 {
 	GetLengthOf();
-
 
 	int16 sizeAAAA = std::get<0>(GetLengthOf());
 	int16 sizeBBBB = std::get<1>(GetLengthOf());
 	int16 sizeCCCC  = std::get<2>(GetLengthOf());
-
-
-
 
 	for (auto& metadata : FolderIndex) 
 	{
@@ -477,7 +523,7 @@ int64 ListFolderIndex(bool DisplayFileAge, bool DisplayFileSize, bool DisplayLas
 
 
 
-void SortListChronologically()
+void DirIndexing::SortListChronologically()
 {
 	std::cout << "Sorting chronologically: \n";
 
@@ -509,23 +555,18 @@ void SortListAlphabetically()
 
 
 
-int DirectoryIndexer()  //entry point 
+uint64 DirIndexing::DirectoryIndexer()  //old console entry point. remove someday?
 {
 	auto MyPath = fs::current_path();
 	int8 DiskPercentageLeft = CheckHDDSizeAndSpaceConsole(MyPath, false);
 	fs::path::auto_format(MyPath);
 
-
-
-
 	CheckForDeletedFilesInVector();
-
-
 
 	CreateListFromFiles(MyPath);
 	SortListChronologically();
 
-	ListFolderIndex(true, false, false, false);
+	//ListFolderIndexConsole(true, false, false, false);
 
 	// CalculateDailySpaceUsage(); // unfinished
 

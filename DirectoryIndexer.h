@@ -1,34 +1,48 @@
 #pragma once
+#include <wx/wx.h>
 #include <stdio.h>
 #include <iostream>
 #include <vector>
 #include <string>
-#include <filesystem>
-#include <Windows.h>
-#include <chrono>
+//#include <filesystem>
+//#include <Windows.h>
+
+//#include <chrono>
 #include <sstream>  
 #include <tuple>
 #include "Formatting.h"
 
-class DirectoryIndexingClass
+//namespace fs = std::filesystem;
+
+
+class DirIndexing
 {
 public: 
 	std::string CheckHDDSizeAndSpace(fs::path, bool);
+	//int CreateListFromFiles(fs::path);
+	int8 CheckHDDSizeAndSpaceConsole(fs::path, bool);
+	uint64 DirectoryIndexer();
+	int64 find_greatest(std::string, std::string, std::string);
+	//std::string IntergerWithCommas(int64 vv);
+	int64 ListFolderIndexConsole(bool, bool, bool, bool);
+	std::stringstream GetFileAge(chrono_ftt); //change to int to work with ConvertToWxArrayString
+	int64 GetPercentageUsed(int64, int64, bool);
+	void CalculateDailySpaceUsage();
+
+
+	//uint64, fs::path, int16, chrono_ftt
+	wxArrayString ConvertToWxArrayString(uint64);
+	wxArrayString ConvertToWxArrayString(fs::path);
+	wxArrayString ConvertToWxArrayString(int16);
+	wxArrayString ConvertToWxArrayString(chrono_ftt);
+
+	void SortListChronologically();
+	void CheckForDeletedFilesInVector();
 };
 
 
 
-//int CreateListFromFiles(fs::path);
-int8 CheckHDDSizeAndSpaceConsole(fs::path, bool);
-int DirectoryIndexer();
-void SortListChronologically();
-void CheckForDeletedFilesInVector();
-int64 find_greatest(std::string, std::string, std::string);
-//std::string IntergerWithCommas(int64 vv);
-int64 ListFolderIndex(bool, bool, bool, bool);
-std::stringstream GetFileAge(chrono_ftt);
-int64 GetPercentage(int64, int64, bool);
-void CalculateDailySpaceUsage();
+
 
 class FileFlags /* 16 bits for future impprovements*/ {
 public:
@@ -60,7 +74,7 @@ struct FileMetaData
 {
 	
 public:
-	int OriginalFileOrder = 0;
+	uint64 OriginalFileOrder = 0;
 	fs::path FileRootPath;
 	fs::path FileRelativePath;
 	fs::path FileName;
@@ -70,5 +84,5 @@ public:
 	chrono_ftt TimeLastModified;
 
 };
-
+	//uint64, fs::path, int16, chrono_ftt
 	

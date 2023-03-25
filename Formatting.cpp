@@ -17,7 +17,7 @@ std::string IntergerWithCommas(int64 vv)		//move to seperate class named "format
 
 
 
-std::string IntergerWithCommas(std::bitset<SizeOfBits> vv)		//move to seperate class named "formatting" someday. 
+std::string BitsWithSpaces(std::bitset<SizeOfBits> vv)		//move to seperate class named "formatting" someday. 
 {
 	//std::string s = std::to_string(vv);
 	std::string s = vv.to_string();

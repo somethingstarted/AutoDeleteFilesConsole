@@ -1,6 +1,8 @@
 #pragma once
 #include <bitset>
-#include "main.h"
+#include <filesystem>
+#include <chrono>
+//#include "FileDeleterFrame.h"
 
 namespace fs = std::filesystem;
 using chrono_ftt = std::filesystem::file_time_type;
@@ -24,4 +26,4 @@ class Formatting
 
 const int SizeOfBits = 16;
 std::string IntergerWithCommas(int64);
-std::string IntergerWithCommas(std::bitset<SizeOfBits>);
+std::string BitsWithSpaces(std::bitset<SizeOfBits>);
