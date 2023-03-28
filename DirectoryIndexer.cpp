@@ -3,7 +3,7 @@
 
 
 
-std::vector<FileMetaData> FolderIndex{}; //eventually store this index into a file.
+std::vector<FileMetaData> FolderIndexLegacy{}; //eventually store this index into a file.
 int64 SizeOfDisk;
 int64 FreeSpace;
 int64 AvaliableSpace;
@@ -15,7 +15,7 @@ std::vector<FileMetaData> DailyAverageUsage{};
 void DirIndexing::CheckForDeletedFilesInVector()
 {
 	std::cout << "\n\n\tchecking for deleted files still in Index:\n";
-	for (auto& metadata : FolderIndex)
+	for (auto& metadata : FolderIndexLegacy)
 	{
 		if (fs::exists(metadata.FileName))
 		{
@@ -31,17 +31,17 @@ void DirIndexing::CheckForDeletedFilesInVector()
 	return;
 }
 
-void DirIndexing::CalculateDailySpaceUsage() //unfinished
+auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 {
 	
 	
 	int64 BufferSize = 0;
 	chrono_ftt BufferDay1{};
 
-	if (!FolderIndex.empty())
+	if (!FolderIndexLegacy.empty())
 	{
 		std::cout << "calculating daily space usage:\n";
-		BufferDay1 = std::chrono::floor<std::chrono::days>(FolderIndex.at(0).TimeLastModified);
+		BufferDay1 = std::chrono::floor<std::chrono::days>(FolderIndexLegacy.at(0).TimeLastModified);
 	}
 	else
 		std::cerr << "Calculating daily usage failed for some reason.\n";
@@ -51,7 +51,7 @@ void DirIndexing::CalculateDailySpaceUsage() //unfinished
 	int TotalFilesCounted = 1;
 	int FilesSameDay = 0;
 
-	for (auto& metadata : FolderIndex)
+	for (auto& metadata : FolderIndexLegacy)
 	{
 		chrono_ftt BufferDay2 = std::chrono::floor<std::chrono::days>(metadata.TimeLastModified); //this file
 		
@@ -158,15 +158,16 @@ wxString ConvertToWxArrayString(int16 Request)
 
 wxString ConvertToWxArrayString(chrono_ftt Request)
 {
- 
-	wxString mystring = wxString::Format(wxT("%i"), Request);
+	std::string MyChronoString;
+	MyChronoString =  std::format("{:%a %F %r }", metadata.TimeLastModified);
+	auto mystring = wxString::Format(wxT("%s"), MyChronoString);
 
 
 	return mystring;
 }
 
 
-int CreateListFromFiles(fs::path const& dir) /******************************************************************/
+int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir) 
 {
 	std::cout << "\n\nBuild files in the directory... " << "\n"
 		<< dir.string() << "\n";
@@ -177,7 +178,7 @@ int CreateListFromFiles(fs::path const& dir) /**********************************
 
 	if (!fs::exists(dir) && !fs::is_directory(dir))		//make sure program is running in valid directory
 	{
-		std::cout << "failed at: CreateListFromFiles() > if (!fs::exists(dir) && !fs::is_directory(dir))";
+		std::cout << "failed at: CreateListFromFilesLegacy() > if (!fs::exists(dir) && !fs::is_directory(dir))";
 		std::cin.get();
 		exit(-1);
 	}
@@ -231,7 +232,7 @@ int CreateListFromFiles(fs::path const& dir) /**********************************
 			std::cout << "** ignoring:\t" << metadata.FileName.string() << "\n";
 		}
 
-		else if (std::any_of(FolderIndex.cbegin(), FolderIndex.cend(), [&metadata](const FileMetaData& file) { return file.FileName == metadata.FileName; }))
+		else if (std::any_of(FolderIndexLegacy.cbegin(), FolderIndexLegacy.cend(), [&metadata](const FileMetaData& file) { return file.FileName == metadata.FileName; }))
 		{
 			std::cout << "** Skipping:\t" << metadata.FileName.string() << "\tFile's already in vector." << "\n";
 		}
@@ -240,7 +241,7 @@ int CreateListFromFiles(fs::path const& dir) /**********************************
 		else if (std::any_of(OkayList.cbegin(), OkayList.cend(), [&metadata](std::string p) { return p == metadata.FileExtension; }))
 		{
 			std::cout << "adding: " << metadata.FileName.string() << "\n";
-			FolderIndex.push_back(metadata);
+			FolderIndexLegacy.push_back(metadata);
 		}
 		
 
@@ -263,9 +264,9 @@ int CreateListFromFiles(fs::path const& dir) /**********************************
 
 
 
-int64 DirIndexing::GetPercentageUsed(int64 a, int64 b, bool IsVerbose) //stupid. doesn't work.
+int64 DirIndexing::GetPercentageOf(int64 a, int64 b, bool IsVerbose) 
 {
-	
+	//70 out of 100 returns as 70, not 30. 
 	double Aa = a;
 	double Bb = b;
 
@@ -292,7 +293,7 @@ int64 DirIndexing::GetPercentageUsed(int64 a, int64 b, bool IsVerbose) //stupid.
 	return result;
 }
 
-std::string  DirIndexing::DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new UI version
+std::string  DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new UI version
 {
 	std::error_code ec;
 	auto MyPath = fs::current_path();
@@ -305,7 +306,7 @@ std::string  DirIndexing::DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVer
 	 FreeSpace = static_cast<int64>(MyDiskSpace.free);
 	 AvaliableSpace = static_cast<int64>(MyDiskSpace.available);
 
-	 double HDDPercentageLeft = GetPercentageUsed(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
+	 double HDDPercentageLeft = GetPercentageOf(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
 
 	 //uint64 HDDPercentageLeft = ((FreeSpace * 100) / (FreeSpace + SizeOfDisk)); //unreliable. different every time
 
@@ -374,7 +375,7 @@ int8  DirIndexing::CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // lega
 	FreeSpace = static_cast<int64>(MyDiskSpace.free);
 	AvaliableSpace = static_cast<int64>(MyDiskSpace.available);
 
-	double HDDPercentageLeft = GetPercentageUsed(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
+	double HDDPercentageLeft = GetPercentageOf(FreeSpace, SizeOfDisk, IsVerbose); //stupid. doesn't work
 
 	//uint64 HDDPercentageLeft = ((FreeSpace * 100) / (FreeSpace + SizeOfDisk)); //unreliable. different every time
 
@@ -417,7 +418,7 @@ int8  DirIndexing::CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // lega
 	return HDDPercentageLeft;
 }
 
-std::tuple <int16, int16, int16>  GetLengthOf()
+std::tuple <int16, int16, int16>  GetLengthOf() //some day: this should in the future take in an array/vector, compare ALL parts of array/vector, then return a single number. this looks like shit. 
 {					
 	//initialize things used below
 	int16 sizeAA = 0;
@@ -428,7 +429,7 @@ std::tuple <int16, int16, int16>  GetLengthOf()
 	int16 sizeCCC = 0;
 
 	//formatting, get length of...
-	for (auto& metadata : FolderIndex)
+	for (auto& metadata : FolderIndexLegacy)
 	{
 		std::string strA = std::to_string(metadata.OriginalFileOrder);
 		std::string strB = metadata.FileName.string();
@@ -487,7 +488,7 @@ int64 DirIndexing::ListFolderIndexConsole(bool DisplayFileAge, bool DisplayFileS
 	int16 sizeBBBB = std::get<1>(GetLengthOf());
 	int16 sizeCCCC  = std::get<2>(GetLengthOf());
 
-	for (auto& metadata : FolderIndex) 
+	for (auto& metadata : FolderIndexLegacy) 
 	{
 
 				// extract this someday so i can format files once and be done with it, then just feed all through this: 
@@ -527,7 +528,7 @@ void DirIndexing::SortListChronologically()
 {
 	std::cout << "Sorting chronologically: \n";
 
-	std::sort(FolderIndex.begin(), FolderIndex.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
+	std::sort(FolderIndexLegacy.begin(), FolderIndexLegacy.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
 	{
 		return struct1.TimeLastModified > struct2.TimeLastModified;
 	});
@@ -542,7 +543,7 @@ void SortListAlphabetically()
 {
 	std::cout << "Sorting alpabetically: \n";
 
-	std::sort(FolderIndex.begin(), FolderIndex.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
+	std::sort(FolderIndexLegacy.begin(), FolderIndexLegacy.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
 	{
 		return struct1.FileName > struct2.FileName;
 	});
@@ -563,7 +564,7 @@ uint64 DirIndexing::DirectoryIndexer()  //old console entry point. remove someda
 
 	CheckForDeletedFilesInVector();
 
-	CreateListFromFiles(MyPath);
+	CreateListFromFilesLegacy(MyPath);
 	SortListChronologically();
 
 	//ListFolderIndexConsole(true, false, false, false);

@@ -14,20 +14,38 @@
 
 //namespace fs = std::filesystem;
 
+struct FileMetaData
+{
+
+public:
+	uint64 OriginalFileOrder = 0;
+	fs::path FileRootPath;
+	fs::path FileRelativePath;
+	fs::path FileName;
+	fs::path FileExtension;
+	int16 FileChoicesFlags;
+	uint64 FileSizeKB;
+	chrono_ftt TimeLastModified;
+
+};
 
 class DirIndexing
 {
 public: 
+	std::vector<FileMetaData> FolderIndex2{}; //eventually store this index into a file.
+
 	std::string CheckHDDSizeAndSpace(fs::path, bool);
-	//int CreateListFromFiles(fs::path);
+	//int CreateListFromFilesLegacy(fs::path);
 	int8 CheckHDDSizeAndSpaceConsole(fs::path, bool);
 	uint64 DirectoryIndexer();
 	int64 find_greatest(std::string, std::string, std::string);
 	//std::string IntergerWithCommas(int64 vv);
 	int64 ListFolderIndexConsole(bool, bool, bool, bool);
-	std::stringstream GetFileAge(chrono_ftt); //change to int to work with ConvertToWxArrayString
-	int64 GetPercentageUsed(int64, int64, bool);
-	void CalculateDailySpaceUsage();
+	std::stringstream GetFileAge(chrono_ftt);
+	int CreateListFromFilesLegacy(fs::path const& dir);
+	//change to int to work with ConvertToWxArrayString
+	int64 GetPercentageOf(int64, int64, bool);
+	auto CalculateDailySpaceUsage();
 
 
 	//uint64, fs::path, int16, chrono_ftt
@@ -38,6 +56,8 @@ public:
 
 	void SortListChronologically();
 	void CheckForDeletedFilesInVector();
+
+	//FileMetaData metadata = {};
 };
 
 
@@ -70,19 +90,6 @@ public:
 
 };
 
-struct FileMetaData
-{
-	
-public:
-	uint64 OriginalFileOrder = 0;
-	fs::path FileRootPath;
-	fs::path FileRelativePath;
-	fs::path FileName;
-	fs::path FileExtension;
-	int16 FileChoicesFlags;
-	uint64 FileSizeKB;
-	chrono_ftt TimeLastModified;
 
-};
 	//uint64, fs::path, int16, chrono_ftt
 	
