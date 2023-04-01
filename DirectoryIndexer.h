@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <wx/msgdlg.h>
 //#include <filesystem>
 //#include <Windows.h>
 
@@ -12,13 +13,15 @@
 #include <tuple>
 #include "Formatting.h"
 
+
+
 //namespace fs = std::filesystem;
 
 struct FileMetaData
 {
 
 public:
-	uint64 OriginalFileOrder = 0;
+	uint64 FileIDnumber = 1;
 	fs::path FileRootPath;
 	fs::path FileRelativePath;
 	fs::path FileName;
@@ -28,16 +31,18 @@ public:
 	chrono_ftt TimeLastModified;
 
 };
-
+// DirIndexing::FolderIndex2
 class DirIndexing
 {
 public: 
 	std::vector<FileMetaData> FolderIndex2{}; //eventually store this index into a file.
+	fs::path FolderToWatch = fs::current_path();	//replace current path with FolderToWatch.
+
 
 	std::string CheckHDDSizeAndSpace(fs::path, bool);
 	//int CreateListFromFilesLegacy(fs::path);
 	int8 CheckHDDSizeAndSpaceConsole(fs::path, bool);
-	uint64 DirectoryIndexer();
+	uint64 DirectoryIndexBuilderUpdater();
 	int64 find_greatest(std::string, std::string, std::string);
 	//std::string IntergerWithCommas(int64 vv);
 	int64 ListFolderIndexConsole(bool, bool, bool, bool);
@@ -46,6 +51,8 @@ public:
 	//change to int to work with ConvertToWxArrayString
 	int64 GetPercentageOf(int64, int64, bool);
 	auto CalculateDailySpaceUsage();
+	void SortListAlphabetically();
+	std::tuple <int16, int16, int16> GetLengthOf();
 
 
 	//uint64, fs::path, int16, chrono_ftt
@@ -58,6 +65,11 @@ public:
 	void CheckForDeletedFilesInVector();
 
 	//FileMetaData metadata = {};
+
+	DirIndexing(Formatting& indexer) : formatting(indexer) {}
+private:
+	Formatting& formatting;
+	
 };
 
 
@@ -73,7 +85,7 @@ public:
 	static constexpr auto ff_ShouldBeArchived = (1 << 2); // never delete, move to different folder?;
 	static constexpr auto Bit3 =			(1 << 3);	//unused for now. 
 
-	static constexpr auto Bit4 = (1 << 4); //all below unused
+	static constexpr auto Bit4 = (1 << 4); //all below unused, but could be used someday if needed.
 	static constexpr auto Bit5 = (1 << 5);
 	static constexpr auto Bit6 = (1 << 6);
 	static constexpr auto Bit7 = (1 << 7);

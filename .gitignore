@@ -2,3 +2,4 @@
 *.exe
 *.pdb
 *.bvr
+BuildDirectory/

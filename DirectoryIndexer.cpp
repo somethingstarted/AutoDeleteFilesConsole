@@ -3,19 +3,25 @@
 
 
 
-std::vector<FileMetaData> FolderIndexLegacy{}; //eventually store this index into a file.
-int64 SizeOfDisk;
+
+//std::vector<FileMetaData> FolderIndexLegacy{}; //eventually store this index into a file.
+Formatting formatting;
+
+int64 SizeOfDisk; //add these to the class please
 int64 FreeSpace;
+
 int64 AvaliableSpace;
 FileMetaData metadata;
-std::vector<FileMetaData> DailyAverageUsage{};
+std::vector<FileMetaData> DailyAverageUsage{}; //add to the class before finishing please for the love of god 
 
-
-
+		//legacy purposes
+//std::string formatting.IntergerWithCommas(int);
+ 
+ 
 void DirIndexing::CheckForDeletedFilesInVector()
 {
 	std::cout << "\n\n\tchecking for deleted files still in Index:\n";
-	for (auto& metadata : FolderIndexLegacy)
+	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
 		if (fs::exists(metadata.FileName))
 		{
@@ -30,6 +36,7 @@ void DirIndexing::CheckForDeletedFilesInVector()
 	std::cout << "\n";
 	return;
 }
+ 
 
 auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 {
@@ -38,10 +45,10 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 	int64 BufferSize = 0;
 	chrono_ftt BufferDay1{};
 
-	if (!FolderIndexLegacy.empty())
+	if (!DirIndexing::FolderIndex2.empty())
 	{
 		std::cout << "calculating daily space usage:\n";
-		BufferDay1 = std::chrono::floor<std::chrono::days>(FolderIndexLegacy.at(0).TimeLastModified);
+		BufferDay1 = std::chrono::floor<std::chrono::days>(DirIndexing::FolderIndex2.at(0).TimeLastModified);
 	}
 	else
 		std::cerr << "Calculating daily usage failed for some reason.\n";
@@ -51,7 +58,7 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 	int TotalFilesCounted = 1;
 	int FilesSameDay = 0;
 
-	for (auto& metadata : FolderIndexLegacy)
+	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
 		chrono_ftt BufferDay2 = std::chrono::floor<std::chrono::days>(metadata.TimeLastModified); //this file
 		
@@ -73,8 +80,8 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 
 
 
-		std::cout << "TotalFilesCounted = " << TotalFilesCounted << "\t\t FilesSameDay = " << FilesSameDay
-			<< "\tBufferSize KB: " << std::right << std::setw(16) << IntergerWithCommas(BufferSize) << "\n";
+		//std::cout << "TotalFilesCounted = " << TotalFilesCounted << "\t\t FilesSameDay = " << FilesSameDay
+		//	<< "\tBufferSize KB: " << std::right << std::setw(16) << Formatting::IntergerWithCommas(BufferSize) << "\n";
 
 		if (BufferDay2 == BufferDay1)
 		{
@@ -125,7 +132,7 @@ bool HasWritePermissions(const fs::path& entry) {
 		return false;
 	}
 }
-
+		// i dont thin i need these anymore: 
 			//ConvertToWxArrayString needs a valid overload for each type used in struct FileMetaData
 		//uint64, fs::path, int16, chrono_ftt
 				//just return strait binary for now for the int16
@@ -165,12 +172,11 @@ wxString ConvertToWxArrayString(chrono_ftt Request)
 
 	return mystring;
 }
-
+		// i dont think i need these above here anymore ^ 
 
 int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir) 
 {
-	std::cout << "\n\nBuild files in the directory... " << "\n"
-		<< dir.string() << "\n";
+
 
 	FileMetaData metadata = {};
 
@@ -178,15 +184,16 @@ int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir)
 
 	if (!fs::exists(dir) && !fs::is_directory(dir))		//make sure program is running in valid directory
 	{
-		std::cout << "failed at: CreateListFromFilesLegacy() > if (!fs::exists(dir) && !fs::is_directory(dir))";
+		std::cout << "failed at: CreateListFromFilesLegacy()" ; //replace with wxMessageBox
 		std::cin.get();
 		exit(-1);
 	}
 
+
 	for (auto const& entry : fs::directory_iterator(dir))		//build entry for file's index
 	{	
-			//file order
-		metadata.OriginalFileOrder;
+			//file ID number set after the fact, because it checks file types first before committing to vector.
+		metadata.FileIDnumber;
 
 			//file name
 		metadata.FileName = entry.path().filename();
@@ -222,49 +229,66 @@ int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir)
 		metadata.TimeLastModified = fs::last_write_time(entry.path());
 
 
+									//ignore the ignore list for now
+									// 
 				//ignore files with these qualities, no matter what -- swish cheese method. be careful
 		std::vector<std::string> IgnoreList = { ".exe", ".pdb"};
 				//only allow files with these in it. 
 		std::vector<std::string> OkayList = { ".mp3", ".bvr"};
 
-		if (std::any_of(IgnoreList.cbegin(), IgnoreList.cend(), [&metadata](std::string p) { return p == metadata.FileExtension; }))
+		if (std::any_of(IgnoreList.cbegin(), IgnoreList.cend(), [&metadata](std::string p) { return p == metadata.FileExtension.string(); }))
 		{
-			std::cout << "** ignoring:\t" << metadata.FileName.string() << "\n";
+			//std::cout << "** ignoring:\t" << metadata.FileName.string() << "\n";
 		}
 
-		else if (std::any_of(FolderIndexLegacy.cbegin(), FolderIndexLegacy.cend(), [&metadata](const FileMetaData& file) { return file.FileName == metadata.FileName; }))
+		else if (std::any_of(DirIndexing::FolderIndex2.cbegin(), DirIndexing::FolderIndex2.cend(), [&metadata](const FileMetaData& file) { return file.FileName == metadata.FileName; }))
 		{
-			std::cout << "** Skipping:\t" << metadata.FileName.string() << "\tFile's already in vector." << "\n";
+			//std::cout << "** Skipping:\t" << metadata.FileName.string() << "\tFile's already in vector." << "\n";
 		}
 				 
 				//only add ones of this extension  -- extra careful
-		else if (std::any_of(OkayList.cbegin(), OkayList.cend(), [&metadata](std::string p) { return p == metadata.FileExtension; }))
+		else 
+		if (std::any_of(OkayList.cbegin(), OkayList.cend(), [&metadata](std::string p) { return p == metadata.FileExtension.string(); }))
 		{
-			std::cout << "adding: " << metadata.FileName.string() << "\n";
-			FolderIndexLegacy.push_back(metadata);
-		}
+			//std::cout << "adding: " << metadata.FileName.string() << "\n";
+			DirIndexing::FolderIndex2.push_back(metadata);
+		
+											//
+											//end of ignore list 
 		
 
-			//don't let metadata go above 9'999.
-		if (metadata.OriginalFileOrder < 9'999)
+			//don't let metadata go above 99'999.
+			//only count up if it adds the file to the vector
+		if (metadata.FileIDnumber < 99'999)
 		{
-			metadata.OriginalFileOrder++;
+			metadata.FileIDnumber++;
 		}
-		else 
+		else if (metadata.FileIDnumber > 9'999'999 || metadata.FileIDnumber <= 0)
 		{
-			metadata.OriginalFileOrder = 0;
+			metadata.FileIDnumber = 1;
 		}
+
+		}
+
 			//reset bits back to zero?
 		metadata.FileChoicesFlags = metadata.FileChoicesFlags & ~FileFlags::ff_CanBeWrittenTo;
 
 	}
-	
+
+	//auto sizeeeee = DirIndexing::FolderIndex2.size();
+	//auto address = &DirIndexing::FolderIndex2;
+	//std::stringstream Foobar{};
+	//Foobar << "CreateListFromFilesLegacy sucessfully started." << "\n  &DirIndexing::FolderIndex2 before: \n" << address << "\nsize:" << sizeeeee;
+	//wxMessageBox(Foobar.str());
+	//std::cout << "\n\nBuild files in the directory... " << "\n"
+	//	<< dir.string() << "\n";
+
 	return 0;
 }
 
 
 
-int64 DirIndexing::GetPercentageOf(int64 a, int64 b, bool IsVerbose) 
+int64 DirIndexing::GetPercentageOf(int64 a, int64 b, bool IsVerbose) //should be moved to formatting.cpp someday
 {
 	//70 out of 100 returns as 70, not 30. 
 	double Aa = a;
@@ -315,12 +339,12 @@ std::string  DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new U
 		 const int ArrayLength = 3;
 		 std::string DiskSizeNumbers[ArrayLength]
 		 {
-			 IntergerWithCommas(SizeOfDisk),
-			 IntergerWithCommas(FreeSpace),
-			 IntergerWithCommas(AvaliableSpace),
+			 formatting.IntergerWithCommas(SizeOfDisk),
+			 formatting.IntergerWithCommas(FreeSpace),
+			 formatting.IntergerWithCommas(AvaliableSpace),
 		 };
 	 
-		 int16 width = IntergerWithCommas(SizeOfDisk).size();
+		 int16 width = formatting.IntergerWithCommas(SizeOfDisk).size();
 
 		 std::stringstream OSS1;
 		 std::stringstream OSSa;
@@ -344,11 +368,11 @@ std::string  DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new U
 
 
 		 OSS1 << "Size Of Disk\t";
-		 OSSa << std::right << std::setw(width) << IntergerWithCommas((SizeOfDisk / DivideBy)) << UnitsOfMeasure << "\n";
+		 OSSa << std::right << std::setw(width) << formatting.IntergerWithCommas((SizeOfDisk / DivideBy)) << UnitsOfMeasure << "\n";
 		 /*OSS2 << "Free Space\t\t";
-		 OSSb << std::right << std::setw(width) << IntergerWithCommas(FreeSpace) << "\n";*/
+		 OSSb << std::right << std::setw(width) << formatting.IntergerWithCommas(FreeSpace) << "\n";*/
 		 OSS3 << "Avaliable Space:\t";
-		 OSSc << std::right << std::setw(width) << IntergerWithCommas((AvaliableSpace / DivideBy)) << UnitsOfMeasure << "\n";
+		 OSSc << std::right << std::setw(width) << formatting.IntergerWithCommas((AvaliableSpace / DivideBy)) << UnitsOfMeasure << "\n";
 		 OSS4 << "Disk Percent used:\t";
 		 OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
 
@@ -361,7 +385,7 @@ std::string  DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new U
 	 return s;
 }
 
-		//legacy CONSOLE version
+		//legacy CONSOLE version. idk which veriosn gets called in WX tho
 int8  DirIndexing::CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // legacy
 {
 	std::error_code ec;
@@ -384,12 +408,12 @@ int8  DirIndexing::CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // lega
 		const int ArrayLength = 3;
 		std::string DiskSizeNumbers[ArrayLength]
 		{
-			IntergerWithCommas(SizeOfDisk),
-			IntergerWithCommas(FreeSpace),
-			IntergerWithCommas(AvaliableSpace),
+			formatting.IntergerWithCommas(SizeOfDisk),
+			formatting.IntergerWithCommas(FreeSpace),
+			formatting.IntergerWithCommas(AvaliableSpace),
 		};
 
-		int16 width = IntergerWithCommas(SizeOfDisk).size();
+		int16 width = formatting.IntergerWithCommas(SizeOfDisk).size();
 
 		std::stringstream OSS1;
 		std::stringstream OSSa;
@@ -401,11 +425,11 @@ int8  DirIndexing::CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // lega
 		std::stringstream OSSd;
 
 		OSS1 << "Size Of Disk\t\t";
-		OSSa << std::right << std::setw(width) << IntergerWithCommas(SizeOfDisk) << "\n";
+		OSSa << std::right << std::setw(width) << formatting.IntergerWithCommas(SizeOfDisk) << "\n";
 		OSS2 << "Free Space\t\t";
-		OSSb << std::right << std::setw(width) << IntergerWithCommas(FreeSpace) << "\n";
+		OSSb << std::right << std::setw(width) << formatting.IntergerWithCommas(FreeSpace) << "\n";
 		OSS3 << "Avaliable Space:\t";
-		OSSc << std::right << std::setw(width) << IntergerWithCommas(AvaliableSpace) << "\n";
+		OSSc << std::right << std::setw(width) << formatting.IntergerWithCommas(AvaliableSpace) << "\n";
 		OSS4 << "Disk Percent Left:\t";
 		OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
 
@@ -418,7 +442,7 @@ int8  DirIndexing::CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // lega
 	return HDDPercentageLeft;
 }
 
-std::tuple <int16, int16, int16>  GetLengthOf() //some day: this should in the future take in an array/vector, compare ALL parts of array/vector, then return a single number. this looks like shit. 
+std::tuple <int16, int16, int16>  DirIndexing::GetLengthOf() //some day: this should in the future take in an array/vector, compare ALL parts of array/vector, then return a single number. this looks like shit. 
 {					
 	//initialize things used below
 	int16 sizeAA = 0;
@@ -429,9 +453,9 @@ std::tuple <int16, int16, int16>  GetLengthOf() //some day: this should in the f
 	int16 sizeCCC = 0;
 
 	//formatting, get length of...
-	for (auto& metadata : FolderIndexLegacy)
+	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
-		std::string strA = std::to_string(metadata.OriginalFileOrder);
+		std::string strA = std::to_string(metadata.FileIDnumber);
 		std::string strB = metadata.FileName.string();
 		std::string strC = std::to_string(metadata.FileSizeKB);
 
@@ -465,7 +489,7 @@ std::tuple <int16, int16, int16>  GetLengthOf() //some day: this should in the f
 	return std::make_tuple(sizeAAA, sizeBBB, sizeCCC);
 }
 
-
+		//can be moved to formatting someday? it doesn't create it's own data for the vector, just converts it. IE formatting
 std::stringstream DirIndexing::GetFileAge(chrono_ftt TimeLastModified2) //time last modified 
 {
 		auto diff = std::chrono::file_clock::now() - TimeLastModified2;
@@ -488,14 +512,14 @@ int64 DirIndexing::ListFolderIndexConsole(bool DisplayFileAge, bool DisplayFileS
 	int16 sizeBBBB = std::get<1>(GetLengthOf());
 	int16 sizeCCCC  = std::get<2>(GetLengthOf());
 
-	for (auto& metadata : FolderIndexLegacy) 
+	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
 
 				// extract this someday so i can format files once and be done with it, then just feed all through this: 
 		if (DisplayOriginalFileOrder == true)
 		{
 			std::cout << "#";
-			std::cout << std::right << std::setw(sizeAAAA) << IntergerWithCommas(metadata.OriginalFileOrder);
+			std::cout << std::right << std::setw(sizeAAAA) << formatting.IntergerWithCommas(metadata.FileIDnumber);
 		}
 
 		std::cout << "  ";
@@ -504,7 +528,7 @@ int64 DirIndexing::ListFolderIndexConsole(bool DisplayFileAge, bool DisplayFileS
 		if (DisplayFileSize == true)
 		{
 			std::cout << "  ";
-			std::cout << std::right << std::setw(sizeCCCC) << IntergerWithCommas(metadata.FileSizeKB) << " KB";
+			std::cout << std::right << std::setw(sizeCCCC) << formatting.IntergerWithCommas(metadata.FileSizeKB) << " KB";
 		}
 		if (DisplayLastModifiedTime == true)
 		{
@@ -528,7 +552,7 @@ void DirIndexing::SortListChronologically()
 {
 	std::cout << "Sorting chronologically: \n";
 
-	std::sort(FolderIndexLegacy.begin(), FolderIndexLegacy.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
+	std::sort(DirIndexing::FolderIndex2.begin(), DirIndexing::FolderIndex2.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
 	{
 		return struct1.TimeLastModified > struct2.TimeLastModified;
 	});
@@ -539,11 +563,11 @@ void DirIndexing::SortListChronologically()
 	return;
 }
 
-void SortListAlphabetically()
+void DirIndexing::SortListAlphabetically()
 {
 	std::cout << "Sorting alpabetically: \n";
 
-	std::sort(FolderIndexLegacy.begin(), FolderIndexLegacy.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
+	std::sort(DirIndexing::FolderIndex2.begin(), DirIndexing::FolderIndex2.end(), [](const auto& struct1, const auto& struct2) //error 'class FileMetaData' has no member 'begin' or 'end'
 	{
 		return struct1.FileName > struct2.FileName;
 	});
@@ -556,16 +580,22 @@ void SortListAlphabetically()
 
 
 
-uint64 DirIndexing::DirectoryIndexer()  //old console entry point. remove someday?
+uint64 DirIndexing::DirectoryIndexBuilderUpdater()  //keep. BUILD and REBUILD and UPDATE the index of files here in background to make rest of program work.
 {
+	//std::stringstream Foobar{};
+	//Foobar << "DirectoryIndexBuilderUpdater sucessfully ran.";
+	//wxMessageBox(Foobar.str());
+
 	auto MyPath = fs::current_path();
 	int8 DiskPercentageLeft = CheckHDDSizeAndSpaceConsole(MyPath, false);
 	fs::path::auto_format(MyPath);
 
+
 	CheckForDeletedFilesInVector();
 
 	CreateListFromFilesLegacy(MyPath);
-	SortListChronologically();
+
+	//SortListChronologically();
 
 	//ListFolderIndexConsole(true, false, false, false);
 

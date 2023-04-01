@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <wx/grid.h>
+#include "VersionNumber.h"
 
 //#include <vector>
 //#include <string>
@@ -14,19 +15,21 @@
 //#include <conio.h>
  
 #include "DirectoryIndexer.h"
-//#include "DirectoryIndexer.cpp"
+//#include "DirectoryIndexBuilderUpdater.cpp"
 #include "Formatting.h"
 
 class MyFrame : public wxFrame {
 public:
-	MyFrame(const wxString& title);
-	//~MyFrame(); //build a destuctor someday? 
+	MyFrame(const wxString& title, DirIndexing& dirIndexing);
+	//MyFrame(); //build a destuctor someday? 
 	wxListBox*  ListDirectoryIndexer();
 	wxStaticText*  DisplayCheckHDDSize();
 	wxGrid* DisplayDirectoryAsGrid();
-
+	void AlertBoxTest();
+	wxGrid* DirectoryGrid{};
 private:
-	DirIndexing indexer;
+	DirIndexing& indexer;
+	Formatting& formatting;
 	
 };
 

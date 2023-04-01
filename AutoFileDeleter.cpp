@@ -2,7 +2,11 @@
 #include "FileDeleterFrame.h"
 
 bool AutoDeleteFiles::OnInit() {
-	MyFrame* frame = new MyFrame("Auto File Deleter");
+	// Instantiate the DirIndexing class
+	//DirIndexing indexer;
+	Formatting formatting;
+	DirIndexing indexer(formatting);
+	MyFrame* frame = new MyFrame("Auto File Deleter", indexer);
 	frame->Show(true);
 	return true;
 }

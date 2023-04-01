@@ -2,11 +2,14 @@
 #include <bitset>
 #include <filesystem>
 #include <chrono>
+
 //#include "FileDeleterFrame.h"
 
 namespace fs = std::filesystem;
 using chrono_ftt = std::filesystem::file_time_type;
 using chrono_duration = std::chrono::system_clock::duration;
+
+const int SizeOfBits = 16;
 
 typedef   std::int64_t int64;
 typedef   std::int32_t int32;
@@ -21,9 +24,12 @@ class Formatting
 {
 	
 	public:
-
+		std::string IntergerWithCommas(int64);
+		//std::string IntergerWithCommas(int64);
+		std::stringstream GetFileAge(chrono_ftt);
+		std::string BitsWithSpaces(std::bitset<SizeOfBits>);
 };
 
-const int SizeOfBits = 16;
-std::string IntergerWithCommas(int64);
-std::string BitsWithSpaces(std::bitset<SizeOfBits>);
+
+//std::string IntergerWithCommas(int64);
+//std::string BitsWithSpaces(std::bitset<SizeOfBits>);
