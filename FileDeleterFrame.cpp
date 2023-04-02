@@ -39,6 +39,7 @@ MyFrame::MyFrame(const wxString& title, DirIndexing& indexer)
 
 
 }
+
 		//for testing purposes. 
 void MyFrame::DebugTesterMessageBox(std::string Message = {}, std::string Title = {}, bool AlwaysPopUp = 0)
 {
@@ -66,13 +67,18 @@ void MyFrame::InsertMoreRows(const int64& RowsToAdd)
 void MyFrame::PopulateGrid()
 {
 
-	
+	DebugTesterMessageBox("update index");
+	indexer.DirectoryIndexBuilderUpdater();
+
 	fs::path FileName_ForGrid;
 	int64 fi_size{};
 
-
+	DebugTesterMessageBox("clear grid");
 	// Clear the grid before repopulating it
 	DirectoryGrid->ClearGrid();
+	DirectoryGrid->Refresh();
+	DebugTesterMessageBox("clear grid 2");
+
 	if (DirectoryGrid->GetNumberRows() > 0)
 	{
 		DirectoryGrid->DeleteRows(0, DirectoryGrid->GetNumberRows());

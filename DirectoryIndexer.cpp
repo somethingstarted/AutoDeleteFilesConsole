@@ -18,9 +18,9 @@ std::vector<FileMetaData> DailyAverageUsage{}; //add to the class before finishi
 //std::string formatting.IntergerWithCommas(int);
  
  
-void DirIndexing::CheckForDeletedFilesInVector()
+void DirIndexing::CheckForDeletedFilesInVector() //didn't really do anything i think. could be removed later. 
 {
-	std::cout << "\n\n\tchecking for deleted files still in Index:\n";
+	//std::cout << "\n\n\tchecking for deleted files still in Index:\n";
 	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
 		if (fs::exists(metadata.FileName))
@@ -79,10 +79,6 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 		}
 
 
-
-		//std::cout << "TotalFilesCounted = " << TotalFilesCounted << "\t\t FilesSameDay = " << FilesSameDay
-		//	<< "\tBufferSize KB: " << std::right << std::setw(16) << Formatting::IntergerWithCommas(BufferSize) << "\n";
-
 		if (BufferDay2 == BufferDay1)
 		{
 			
@@ -100,16 +96,7 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 
 		
 	}
-	/*
-	work through file list
-	 - add first day and date to a temp buffer,
-	 - do while the next entry is from the same day, add space size to the buffer,
-	 - if/when the next entry is different:
-			-pushback buffer 
 
-
-	 - later, not now, store a log of daily storage space usage. 
-	*/
 
 
 
@@ -136,6 +123,8 @@ bool HasWritePermissions(const fs::path& entry) {
 			//ConvertToWxArrayString needs a valid overload for each type used in struct FileMetaData
 		//uint64, fs::path, int16, chrono_ftt
 				//just return strait binary for now for the int16
+
+
 wxString ConvertToWxArrayString(uint64 Request)
 {
 	wxString mystring = wxString::Format(wxT("%i"), Request);
@@ -275,13 +264,6 @@ int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir)
 
 	}
 
-	//auto sizeeeee = DirIndexing::FolderIndex2.size();
-	//auto address = &DirIndexing::FolderIndex2;
-	//std::stringstream Foobar{};
-	//Foobar << "CreateListFromFilesLegacy sucessfully started." << "\n  &DirIndexing::FolderIndex2 before: \n" << address << "\nsize:" << sizeeeee;
-	//wxMessageBox(Foobar.str());
-	//std::cout << "\n\nBuild files in the directory... " << "\n"
-	//	<< dir.string() << "\n";
 
 	return 0;
 }

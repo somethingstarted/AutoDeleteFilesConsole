@@ -55,7 +55,7 @@ private:
 	const uint8 c_DeleteFlag = 6;
 	const uint8 c_ArchiveFlag = 7;
 
-
+	 
 
 
 };
