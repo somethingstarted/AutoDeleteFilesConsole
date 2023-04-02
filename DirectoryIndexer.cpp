@@ -186,7 +186,7 @@ int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir)
 	{
 		std::cout << "failed at: CreateListFromFilesLegacy()" ; //replace with wxMessageBox
 		std::cin.get();
-		exit(-1);
+		//exit(-1);
 	}
 
 
@@ -263,7 +263,7 @@ int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir)
 		{
 			metadata.FileIDnumber++;
 		}
-		else if (metadata.FileIDnumber > 9'999'999 || metadata.FileIDnumber <= 0)
+		else if (metadata.FileIDnumber > 99'999 || metadata.FileIDnumber <= 0)
 		{
 			metadata.FileIDnumber = 1;
 		}
@@ -380,7 +380,7 @@ std::string  DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new U
 
 		 //std::cout << s;
 
-		 std::this_thread::sleep_for(std::chrono::seconds(4));
+		 //std::this_thread::sleep_for(std::chrono::seconds(4));
 	 }
 	 return s;
 }

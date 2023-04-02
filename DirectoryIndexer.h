@@ -69,6 +69,8 @@ public:
 	DirIndexing(Formatting& indexer) : formatting(indexer) {}
 private:
 	Formatting& formatting;
+
+
 	
 };
 
@@ -85,8 +87,8 @@ public:
 	static constexpr auto ff_ShouldBeArchived = (1 << 2); // never delete, move to different folder?;
 	static constexpr auto Bit3 =			(1 << 3);	//unused for now. 
 
-	static constexpr auto Bit4 = (1 << 4); //all below unused, but could be used someday if needed.
-	static constexpr auto Bit5 = (1 << 5);
+	static constexpr auto Bit4 = (1 << 4); //-----todo: let us know if file is checked as "hidden" or not. 
+	static constexpr auto Bit5 = (1 << 5); //all below unused, but could be used someday if needed.
 	static constexpr auto Bit6 = (1 << 6);
 	static constexpr auto Bit7 = (1 << 7);
 

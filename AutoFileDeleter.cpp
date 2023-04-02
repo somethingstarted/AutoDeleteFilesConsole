@@ -6,8 +6,22 @@ bool AutoDeleteFiles::OnInit() {
 	//DirIndexing indexer;
 	Formatting formatting;
 	DirIndexing indexer(formatting);
+	
 	MyFrame* frame = new MyFrame("Auto File Deleter", indexer);
+
+	
+	 
+
 	frame->Show(true);
+
+	//frame->PopulateGrid();
+	wxMessageBox("before insermorerows", "Title", wxICON_INFORMATION);
+
+	frame->InsertMoreRows(1);
+
+
+	
+
 	return true;
 }
 
