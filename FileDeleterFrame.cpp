@@ -419,12 +419,18 @@ void MyFrame::UpdateGridFromVector(wxGrid* DirectoryGrid, int GridColumns)
 	// Resize the grid to match the size of the vector
 	int currentRows = DirectoryGrid->GetNumberRows();
 	int newRows = static_cast<int>(indexer.FolderIndex2.size());
+
+	int HowManyRowsDelete{};
+
 	if (newRows > currentRows) {
 		DirectoryGrid->AppendRows(newRows - currentRows);
 	}
-	else if (newRows < currentRows) {
-		DirectoryGrid->DeleteRows(newRows, currentRows - newRows);
+	if (DirectoryGrid->GetNumberRows() > 0 && HowManyRowsDelete <= DirectoryGrid->GetNumberRows()) {
+		DirectoryGrid->DeleteRows(0, HowManyRowsDelete);
 	}
+	//else if (newRows < currentRows) {
+	//	DirectoryGrid->DeleteRows(newRows, currentRows - newRows);
+	//}
 
 	// Call the PopulateGridFromVector function to populate the grid
 	PopulateGridFromVector(DirectoryGrid, GridColumns);
@@ -467,22 +473,9 @@ wxStaticText* MyFrame::DisplayCheckHDDSize()
 
 void MyFrame::ListDirectoryIndexer(wxCommandEvent& event)
 {
-	//IterateThroughVector();
-
 
 	UpdateGridFromVector(DirectoryGrid, GridColums);
 
-//PopulateGridFromVector(DirectoryGrid, indexer.FolderIndex2.size());
-	
-
-
-//DeleteLater_PopulateGrid();
-	//DirectoryGrid->SetCellValue(1, 1, "set the cell value?");
-
-	//DirectoryGrid->wxGrid::ForceRefresh();
-	//DirectoryGrid->Refresh();
-	//DirectoryGrid->GetGridWindow()->Refresh(true);
-	//DirectoryGrid->GetGridWindow()->Update();
 
 	return;
 }
