@@ -21,8 +21,10 @@ std::vector<FileMetaData> DailyAverageUsage{}; //add to the class before finishi
 void DirIndexing::CheckForDeletedFilesInVector() //didn't really do anything i think. could be removed later. 
 {
 	//std::cout << "\n\n\tchecking for deleted files still in Index:\n";
+	int i{};
 	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
+		
 		if (fs::exists(metadata.FileName))
 		{
 			return;
@@ -30,8 +32,9 @@ void DirIndexing::CheckForDeletedFilesInVector() //didn't really do anything i t
 		else
 		{
 			std::cout << "***Does not exist:\t" << metadata.FileName.string() << "\n";
+			FolderIndex2.erase(FolderIndex2.begin() + i);
 		}
-
+		i++;
 	}
 	std::cout << "\n";
 	return;
@@ -61,8 +64,7 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
 		chrono_ftt BufferDay2 = std::chrono::floor<std::chrono::days>(metadata.TimeLastModified); //this file
-		
-		
+				
 
 
 
@@ -125,43 +127,43 @@ bool HasWritePermissions(const fs::path& entry) {
 				//just return strait binary for now for the int16
 
 
-wxString ConvertToWxArrayString(uint64 Request)
-{
-	wxString mystring = wxString::Format(wxT("%i"), Request);
-
-
-	return mystring;
-}
-
-wxString ConvertToWxArrayString(fs::path Request)
-{
-	std::string pathbuffer = Request.string();
-
-	wxString mystring = wxString::Format(wxT("%i"), pathbuffer);
-
-
-	return mystring;
-
-}
-	
-wxString ConvertToWxArrayString(int16 Request)
-{
-	wxString mystring = wxString::Format(wxT("%i"), Request);
-
-
-	return mystring;
-}
-
-wxString ConvertToWxArrayString(chrono_ftt Request)
-{
-	std::string MyChronoString;
-	MyChronoString =  std::format("{:%a %F %r }", metadata.TimeLastModified);
-	auto mystring = wxString::Format(wxT("%s"), MyChronoString);
-
-
-	return mystring;
-}
-		// i dont think i need these above here anymore ^ 
+//wxString ConvertToWxArrayString(uint64 Request)
+//{
+//	wxString mystring = wxString::Format(wxT("%i"), Request);
+//
+//
+//	return mystring;
+//}
+//
+//wxString ConvertToWxArrayString(fs::path Request)
+//{
+//	std::string pathbuffer = Request.string();
+//
+//	wxString mystring = wxString::Format(wxT("%i"), pathbuffer);
+//
+//
+//	return mystring;
+//
+//}
+//	
+//wxString ConvertToWxArrayString(int16 Request)
+//{
+//	wxString mystring = wxString::Format(wxT("%i"), Request);
+//
+//
+//	return mystring;
+//}
+//
+//wxString ConvertToWxArrayString(chrono_ftt Request)
+//{
+//	std::string MyChronoString;
+//	MyChronoString =  std::format("{:%a %F %r }", metadata.TimeLastModified);
+//	auto mystring = wxString::Format(wxT("%s"), MyChronoString);
+//
+//
+//	return mystring;
+//}
+//		// i dont think i need these above here anymore ^ 
 
 int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir) 
 {

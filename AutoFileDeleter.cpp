@@ -14,11 +14,9 @@ bool AutoDeleteFiles::OnInit() {
 
 	frame->Show(true);
 
-	//frame->PopulateGrid();
-	wxMessageBox("before insermorerows", "Title", wxICON_INFORMATION);
 
-	frame->InsertMoreRows(1);
-
+	
+	 
 
 	
 

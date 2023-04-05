@@ -1,4 +1,6 @@
 #pragma once
+
+
 #include <wx/wx.h>
 #include <wx/app.h>
 #include <wx/frame.h>
@@ -6,6 +8,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <wx/grid.h>
+#include <wx/button.h>
+
+
+
 #include "VersionNumber.h"
 
 //#include <vector>
@@ -24,12 +30,15 @@ public:
 	//MyFrame(); //build a destuctor someday? 
 
 			//functions
-	wxListBox*  ListDirectoryIndexer();
+	void  ListDirectoryIndexer(wxCommandEvent&);
 	wxStaticText*  DisplayCheckHDDSize();
-	wxGrid* DisplayDirectoryAsGrid();
+	wxGrid* DirectoryGridConstructor();
+	void PopulateGridFromVector(wxGrid* DirectoryGrid, const int& GridColums);
 	void InsertMoreRows(const int64& fi_size);
-	void PopulateGrid();
+	void IterateThroughVector();
+	void DeleteLater_PopulateGrid();
 
+	void UpdateGridFromVector(wxGrid*, int);
 
 
 	wxGrid* DirectoryGrid;
@@ -37,6 +46,8 @@ public:
 private:
 	void DebugTesterMessageBox(std::string, std::string, bool);
 
+	int FrameWidth = 1'200;
+	int FrameHeight = 900;
 	 
 	DirIndexing& indexer;
 	Formatting& formatting;
@@ -56,7 +67,6 @@ private:
 	const uint8 c_ArchiveFlag = 7;
 
 	 
-
 
 };
 
