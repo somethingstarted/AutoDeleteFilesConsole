@@ -9,11 +9,18 @@ namespace fs = std::filesystem;
 //main window. replaces int main (doesn't work in "release build mode" though).
 MyFrame::MyFrame(const wxString& title, DirIndexing& indexer)
 	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1200, 900)),
-	indexer(indexer), formatting(formatting)
+	indexer(indexer), formatting(formatting), FsWatcher(FsWatcher)
 {
 	//FrameWidth = 1'200;
 	//FrameHeight = 900;
 	
+	std::wstring directory = L"C:\\path\\to\\watch";
+	//convert fs::current_path() to wstring
+
+	std::wstring MyPathHere = fs::current_path().wstring();
+	//FileSystemWatcher FileSystemWatcher(MyPathHere);
+	FileSystemWatcher.StartMonitoring();
+
 	std::stringstream WindowTitle;
 	WindowTitle << "Auto File Deleter " << APP_VERSION;
 	wxString newtitle = WindowTitle.str();
@@ -193,6 +200,7 @@ void MyFrame::IterateThroughVector()
 	}
 }
 
+/*
 void MyFrame::DeleteLater_PopulateGrid() //need to delete 
 {
 
@@ -238,6 +246,9 @@ void MyFrame::DeleteLater_PopulateGrid() //need to delete
 
 	
 }
+*/
+
+
 
 wxGrid* MyFrame::DirectoryGridConstructor()
 {
@@ -411,32 +422,42 @@ void MyFrame::PopulateGridFromVector(wxGrid* DirectoryGrid, const int& GridColum
 }
 
 
-void MyFrame::UpdateGridFromVector(wxGrid* DirectoryGrid, int GridColumns)
+
+void MyFrame::UpdateGridFromVector(wxGrid* DirectoryGrid, int GridRows)  
 {
-	// Clear the grid
-	DirectoryGrid->ClearGrid();
-
-	// Resize the grid to match the size of the vector
-	int currentRows = DirectoryGrid->GetNumberRows();
-	int newRows = static_cast<int>(indexer.FolderIndex2.size());
-
-	int HowManyRowsDelete{};
-
-	if (newRows > currentRows) {
-		DirectoryGrid->AppendRows(newRows - currentRows);
+	if (indexer.CountChangesSinceGridRefresh <= 0)
+	{
+		 
+		return;
 	}
-	if (DirectoryGrid->GetNumberRows() > 0 && HowManyRowsDelete <= DirectoryGrid->GetNumberRows()) {
-		DirectoryGrid->DeleteRows(0, HowManyRowsDelete);
+	else
+	{
+
+		// Clear the grid
+		DirectoryGrid->ClearGrid();
+
+		// Resize the grid to match the size of the vector
+		int CurrentRows = DirectoryGrid->GetNumberRows();
+		int NewRows = static_cast<int>(indexer.FolderIndex2.size());
+		int HowManyRowsDelete = (CurrentRows > NewRows) ? (CurrentRows - NewRows) : 0;
+
+
+		if (NewRows > CurrentRows) {
+			DirectoryGrid->AppendRows(NewRows - CurrentRows);
+		}
+		if (CurrentRows >= 1 && HowManyRowsDelete) {
+			DirectoryGrid->DeleteRows(0, HowManyRowsDelete, true);
+		}
+
+		CurrentRows = DirectoryGrid->GetNumberRows();
+
+		//PopulateGridFromVector(DirectoryGrid, GridRows);
+		PopulateGridFromVector(DirectoryGrid, CurrentRows);
+
+		// Force the grid to refresh and update
+		DirectoryGrid->ForceRefresh();
 	}
-	//else if (newRows < currentRows) {
-	//	DirectoryGrid->DeleteRows(newRows, currentRows - newRows);
-	//}
-
-	// Call the PopulateGridFromVector function to populate the grid
-	PopulateGridFromVector(DirectoryGrid, GridColumns);
-
-	// Force the grid to refresh and update
-	DirectoryGrid->ForceRefresh();
+	
 }
 
 
@@ -470,11 +491,25 @@ wxStaticText* MyFrame::DisplayCheckHDDSize()
 
 }
 
+ void MyFrame::FetchDirectoryContents() 
+{
+	//FileMetaData directory_contents{};
+	indexer.DirectoryIndexBuilderUpdater();
+
+	//auto directory_contents = indexer.FolderIndex2;
+
+
+	return;
+}
 
 void MyFrame::ListDirectoryIndexer(wxCommandEvent& event)
 {
+	
 
-	UpdateGridFromVector(DirectoryGrid, GridColums);
+	
+
+
+	UpdateGridFromVector(DirectoryGrid, GridRows);
 
 
 	return;

@@ -33,6 +33,9 @@
     <ClInclude Include="VersionNumber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FileSystemWatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectoryIndexer.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OperatingSystemCheck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystemWatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

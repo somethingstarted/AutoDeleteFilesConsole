@@ -9,20 +9,13 @@
 #include <stdio.h>
 #include <wx/grid.h>
 #include <wx/button.h>
-
-
+#include <filesystem>
 
 #include "VersionNumber.h"
 
-//#include <vector>
-//#include <string>
-//#include <filesystem>
-//#include <Windows.h>
-//#include <conio.h>
- 
 #include "DirectoryIndexer.h"
-//#include "DirectoryIndexBuilderUpdater.cpp"
 #include "Formatting.h"
+#include "FileSystemWatcher.h"
 
 class MyFrame : public wxFrame {
 public:
@@ -34,9 +27,11 @@ public:
 	wxStaticText*  DisplayCheckHDDSize();
 	wxGrid* DirectoryGridConstructor();
 	void PopulateGridFromVector(wxGrid* DirectoryGrid, const int& GridColums);
+	//void PopulateGridFromVector(wxGrid* DirectoryGrid);
 	void InsertMoreRows(const int64& fi_size);
 	void IterateThroughVector();
 	void DeleteLater_PopulateGrid();
+	void FetchDirectoryContents();
 
 	void UpdateGridFromVector(wxGrid*, int);
 
@@ -51,6 +46,7 @@ private:
 	 
 	DirIndexing& indexer;
 	Formatting& formatting;
+	FileSystemWatcher& FsWatcher;
 	
 	const int GridColums{};
 	uint64 GridRows{};

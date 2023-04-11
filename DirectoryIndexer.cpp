@@ -43,8 +43,6 @@ void DirIndexing::CheckForDeletedFilesInVector() //didn't really do anything i t
 
 auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 {
-	
-	
 	int64 BufferSize = 0;
 	chrono_ftt BufferDay1{};
 
@@ -56,8 +54,6 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 	else
 		std::cerr << "Calculating daily usage failed for some reason.\n";
 
-	
-
 	int TotalFilesCounted = 1;
 	int FilesSameDay = 0;
 
@@ -65,9 +61,6 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 	{
 		chrono_ftt BufferDay2 = std::chrono::floor<std::chrono::days>(metadata.TimeLastModified); //this file
 				
-
-
-
 		if (BufferDay1 != BufferDay2)
 		{
 			FilesSameDay = 0;
@@ -89,19 +82,11 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 
 		BufferDay1 = BufferDay2; // 1 is last file for next time
 
-
-		
 			//resetting for next round
 		TotalFilesCounted++;
 	
-				//days were not same, so...
-
-		
+				//days were not same, so...	
 	}
-
-
-
-
 	return;
 }
 
@@ -165,7 +150,7 @@ bool HasWritePermissions(const fs::path& entry) {
 //}
 //		// i dont think i need these above here anymore ^ 
 
-int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir) 
+int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main version, which will stay
 {
 
 
@@ -175,7 +160,7 @@ int DirIndexing::CreateListFromFilesLegacy(fs::path const& dir)
 
 	if (!fs::exists(dir) && !fs::is_directory(dir))		//make sure program is running in valid directory
 	{
-		std::cout << "failed at: CreateListFromFilesLegacy()" ; //replace with wxMessageBox
+		std::cout << "failed at: CreateListFromFiles()" ; //replace with wxMessageBox
 		std::cin.get();
 		//exit(-1);
 	}
@@ -531,7 +516,7 @@ int64 DirIndexing::ListFolderIndexConsole(bool DisplayFileAge, bool DisplayFileS
 
 
 
-
+		//might still need
 void DirIndexing::SortListChronologically()
 {
 	std::cout << "Sorting chronologically: \n";
@@ -545,8 +530,8 @@ void DirIndexing::SortListChronologically()
 
 
 	return;
-}
-
+} //dont need anymore.
+		//dont need
 void DirIndexing::SortListAlphabetically()
 {
 	std::cout << "Sorting alpabetically: \n";
@@ -560,8 +545,25 @@ void DirIndexing::SortListAlphabetically()
 
 
 	return;
+}	  //dont need anymore?
+
+
+void DirIndexing::ResetVectorCounter(bool YesResetCounter = true)
+{
+
+	DirIndexing::CountChangesSinceGridRefresh = 0;
+	return;
 }
 
+void DirIndexing::AddToRefreshCounter(uint16 ChangesToAddToRefreshCounter = {})
+{
+
+		DirIndexing::CountChangesSinceGridRefresh += ChangesToAddToRefreshCounter;
+		
+
+
+	return;
+}
 
 
 uint64 DirIndexing::DirectoryIndexBuilderUpdater()  //keep. BUILD and REBUILD and UPDATE the index of files here in background to make rest of program work.
@@ -577,7 +579,7 @@ uint64 DirIndexing::DirectoryIndexBuilderUpdater()  //keep. BUILD and REBUILD an
 
 	CheckForDeletedFilesInVector();
 
-	CreateListFromFilesLegacy(MyPath);
+	CreateListFromFiles(MyPath);
 
 	//SortListChronologically();
 

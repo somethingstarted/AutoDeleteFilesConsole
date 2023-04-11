@@ -189,11 +189,15 @@
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseRemote|x64'">
     <ClCompile>
@@ -243,6 +247,7 @@
     <ClInclude Include="AutoFileDeleter.h" />
     <ClInclude Include="DirectoryIndexer.h" />
     <ClInclude Include="FileDeleterFrame.h" />
+    <ClInclude Include="FileSystemWatcher.h" />
     <ClInclude Include="Formatting.h" />
     <ClInclude Include="OperatingSystemCheck.h" />
     <ClInclude Include="VersionNumber.h" />
@@ -251,6 +256,7 @@
     <ClCompile Include="AutoFileDeleter.cpp" />
     <ClCompile Include="DirectoryIndexer.cpp" />
     <ClCompile Include="FileDeleterFrame.cpp" />
+    <ClCompile Include="FileSystemWatcher.cpp" />
     <ClCompile Include="Formatting.cpp" />
     <ClCompile Include="OperatingSystemCheck.cpp" />
   </ItemGroup>

@@ -26,40 +26,40 @@ public:
 	fs::path FileRelativePath;
 	fs::path FileName;
 	fs::path FileExtension;
-	int16 FileChoicesFlags;
-	uint64 FileSizeKB;
+	int16 FileChoicesFlags{};
+	uint64 FileSizeKB{};
 	chrono_ftt TimeLastModified;
 
 };
-// DirIndexing::FolderIndex2
+
+
 class DirIndexing
 {
 public: 
+			//containers, or related to these containers
 	std::vector<FileMetaData> FolderIndex2{}; //eventually store this index into a file.
+	uint16 CountChangesSinceGridRefresh = 0;
 	fs::path FolderToWatch = fs::current_path();	//replace current path with FolderToWatch.
 
-
+			//functions
 	std::string CheckHDDSizeAndSpace(fs::path, bool);
-	//int CreateListFromFilesLegacy(fs::path);
+	//int CreateListFromFiles(fs::path);
 	int8 CheckHDDSizeAndSpaceConsole(fs::path, bool);
 	uint64 DirectoryIndexBuilderUpdater();
 	int64 find_greatest(std::string, std::string, std::string);
 	//std::string IntergerWithCommas(int64 vv);
 	int64 ListFolderIndexConsole(bool, bool, bool, bool);
 	std::stringstream GetFileAge(chrono_ftt);
-	int CreateListFromFilesLegacy(fs::path const& dir);
+	int CreateListFromFiles(fs::path const& dir);
 	//change to int to work with ConvertToWxArrayString
 	int64 GetPercentageOf(int64, int64, bool);
 	auto CalculateDailySpaceUsage();
 	void SortListAlphabetically();
 	std::tuple <int16, int16, int16> GetLengthOf();
+	void ResetVectorCounter(bool);
+	void AddToRefreshCounter(uint16);
+	
 
-
-	//uint64, fs::path, int16, chrono_ftt
-	wxArrayString ConvertToWxArrayString(uint64);
-	wxArrayString ConvertToWxArrayString(fs::path);
-	wxArrayString ConvertToWxArrayString(int16);
-	wxArrayString ConvertToWxArrayString(chrono_ftt);
 
 	void SortListChronologically();
 	void CheckForDeletedFilesInVector();
