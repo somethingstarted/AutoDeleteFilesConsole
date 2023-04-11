@@ -21,10 +21,10 @@ MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Form
 
 
 	//auto MyPathHere = std::filesystem::current_path().string();
-	std::wstring MyPathWstring = formatting.StringToWstring(MyPathHere);
+	/*std::wstring MyPathWstring = formatting.StringToWstring(MyPathHere);
 
 	FileSystemWatcher FileSystemWatcher(MyPathWstring, indexer);
-	FileSystemWatcher.StartMonitoring();
+	FileSystemWatcher.StartMonitoring();*/
 			//these need to be moved to it's own function later
 
 		
@@ -69,6 +69,13 @@ MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Form
 
 }
 
+void MyProgramFrame::StartFileSystemWatcher() {
+	auto MyPathHere = fs::current_path().string();
+	std::wstring MyPathWstring = formatting.StringToWstring(MyPathHere);
+
+	FileSystemWatcher FileSystemWatcher(MyPathWstring, indexer);
+	FileSystemWatcher.StartMonitoring();
+}
 
 
 		//for testing purposes. 

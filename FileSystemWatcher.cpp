@@ -61,24 +61,30 @@ void FileSystemWatcher::StartMonitoring()
     threadHandle_ = CreateThread(nullptr, 0, WatcherThread, this, 0, nullptr);
     if (threadHandle_ == nullptr) 
     {
-        std::cerr << "Failed to create watcher thread: " << GetLastError() << std::endl;
+        
+        std::stringstream thiserror;
+        thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
+        wxString thiserrror = thiserror.str();
+        wxMessageBox(thiserrror, "", wxICON_INFORMATION);
+
         return;
     }
 }
 
-DWORD WINAPI FileSystemWatcher::WatcherThread(LPVOID param) 
+DWORD WINAPI FileSystemWatcher::WatcherThread(LPVOID param)
 {
     FileSystemWatcher* watcher = static_cast<FileSystemWatcher*>(param);
     const DWORD bufferSize = 1024;
     BYTE buffer[bufferSize] = { 0 };
     DWORD bytesRead = 0;
-    //OVERLAPPED overlapped = { 0 };
 
-    //overlapped.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr); // <-- Create an event for the OVERLAPPED structure
 
-    while (true) 
-         
-    { // <-- Changed the loop condition to 'true'
+    std::stringstream thiserror;
+    thiserror << "watcher thread started. last error though: " << GetLastError() << std::endl;
+    wxString thiserrror = thiserror.str();
+    wxMessageBox(thiserrror, "", wxICON_INFORMATION);
+    while (true)
+    {
         if (ReadDirectoryChangesW(
             watcher->directoryHandle_,
             buffer,
@@ -86,14 +92,13 @@ DWORD WINAPI FileSystemWatcher::WatcherThread(LPVOID param)
             TRUE,
             FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE,
             &bytesRead,
-            nullptr, //&overlapped, //how come you changed this to nullptr?
-            nullptr)) 
+            nullptr,
+            nullptr))
         {
-
             DWORD offset = 0;
             FILE_NOTIFY_INFORMATION* fni = nullptr;
 
-            do 
+            do
             {
                 fni = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(buffer + offset);
                 std::wstring fileName(fni->FileName, fni->FileNameLength / sizeof(wchar_t));
@@ -106,32 +111,26 @@ DWORD WINAPI FileSystemWatcher::WatcherThread(LPVOID param)
         }
         else
         {
+            DWORD error = GetLastError();
+            std::cerr << "ReadDirectoryChangesW failed: " << error << std::endl;
             std::stringstream thiserror;
             thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
             wxString thiserrror = thiserror.str();
             wxMessageBox(thiserrror, "", wxICON_INFORMATION);
-			
-			break;
-		}
-      
-                //i should be able to remove most of these below right? 
-        //HANDLE handles[] = { watcher->exitEvent_, overlapped.hEvent }; // <-- Add handles array with exitEvent_ and overlapped.hEvent
-        //DWORD waitResult = WaitForMultipleObjects(2, handles, FALSE, INFINITE); // <-- Wait for either exitEvent_ or overlapped.hEvent to be signaled
-
-        //if (waitResult == WAIT_OBJECT_0) 
-        //{
-        //    // exitEvent_ was signaled
-        //    break; // <-- Exit the loop if exitEvent_ is signaled
-        //}
-        //else if (waitResult == WAIT_OBJECT_0 + 1) {
-        //    // overlapped.hEvent was signaled, meaning ReadDirectoryChangesW has data
-        //    ResetEvent(overlapped.hEvent); // <-- Reset the overlapped.hEvent for the next iteration
-        //}
+            if (error == 5 || error == 6) {
+                // Sleep for 1 second and try again
+                Sleep(1000);
+                continue;
+            }
+            else {
+                break;
+            }
+        }
     }
 
-    //CloseHandle(overlapped.hEvent); // <-- is this still needed? 
     return 0;
 }
+
 
 void FileSystemWatcher::OnFileSystemChange(DWORD action, const std::wstring& fileName) 
 {

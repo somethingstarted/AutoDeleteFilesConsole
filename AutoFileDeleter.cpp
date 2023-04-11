@@ -24,6 +24,7 @@ bool AutoDeleteFiles::OnInit() {
 
 	frame->Show(true);
 
+	frame->StartFileSystemWatcher();
 
 	
 	 

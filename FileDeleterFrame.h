@@ -37,7 +37,7 @@ public:
 	void IterateThroughVector();
 	//void DeleteLater_PopulateGrid();
 	void FetchDirectoryContents();
-
+	void StartFileSystemWatcher();
 	void UpdateGridFromVector(wxGrid*, int);
 	
 
@@ -45,6 +45,7 @@ public:
 
 private:
 	void DebugTesterMessageBox(std::string, std::string, bool);
+	
 
 	int FrameWidth = 1'200;
 	int FrameHeight = 900;
