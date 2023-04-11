@@ -1,4 +1,6 @@
 #include "FileDeleterFrame.h"
+#include <locale>
+#include <codecvt>
 
 
 namespace fs = std::filesystem;
@@ -7,20 +9,25 @@ namespace fs = std::filesystem;
 
 
 //main window. replaces int main (doesn't work in "release build mode" though).
-MyFrame::MyFrame(const wxString& title, DirIndexing& indexer)
-	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1200, 900)),
-	indexer(indexer), formatting(formatting), FsWatcher(FsWatcher)
-{
-	//FrameWidth = 1'200;
-	//FrameHeight = 900;
+MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, FileSystemWatcher& fswatcher)
+	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1200, 900)), 
+	indexer(indexer), 
+	fswatcher(fswatcher),
+	 formatting(formatting) 
 	
-	std::wstring directory = L"C:\\path\\to\\watch";
-	//convert fs::current_path() to wstring
+{
+	
+	auto MyPathHere = fs::current_path().string();
 
-	std::wstring MyPathHere = fs::current_path().wstring();
-	//FileSystemWatcher FileSystemWatcher(MyPathHere);
+
+	//auto MyPathHere = std::filesystem::current_path().string();
+	std::wstring MyPathWstring = formatting.StringToWstring(MyPathHere);
+
+	FileSystemWatcher FileSystemWatcher(MyPathWstring, indexer);
 	FileSystemWatcher.StartMonitoring();
+			//these need to be moved to it's own function later
 
+		
 	std::stringstream WindowTitle;
 	WindowTitle << "Auto File Deleter " << APP_VERSION;
 	wxString newtitle = WindowTitle.str();
@@ -40,7 +47,7 @@ MyFrame::MyFrame(const wxString& title, DirIndexing& indexer)
 
 	// Add a button
 	wxButton* myButton = new wxButton(this, wxID_ANY, wxT("Refresh Directory"));
-	myButton->Bind(wxEVT_BUTTON, &MyFrame::ListDirectoryIndexer, this);
+	myButton->Bind(wxEVT_BUTTON, &MyProgramFrame::ListDirectoryIndexer, this);
 
 
 		// Set up a sizer
@@ -62,8 +69,10 @@ MyFrame::MyFrame(const wxString& title, DirIndexing& indexer)
 
 }
 
+
+
 		//for testing purposes. 
-void MyFrame::DebugTesterMessageBox(std::string Message = {}, std::string Title = {}, bool AlwaysPopUp = 0)
+void MyProgramFrame::DebugTesterMessageBox(std::string Message = {}, std::string Title = {}, bool AlwaysPopUp = 0)
 {
 	bool AllPopUpsOn = 0;
 	if (AlwaysPopUp == 1 || AllPopUpsOn == 1)
@@ -76,7 +85,7 @@ void MyFrame::DebugTesterMessageBox(std::string Message = {}, std::string Title 
 
 
 
-void MyFrame::InsertMoreRows(const int64& RowsToAdd)
+void MyProgramFrame::InsertMoreRows(const int64& RowsToAdd)
 {
 	//int sizeofgrid = DirectoryGrid->GetNumberRows();
 
@@ -91,7 +100,7 @@ void MyFrame::InsertMoreRows(const int64& RowsToAdd)
 	DirectoryGrid->Update();
 }
 
-void MyFrame::IterateThroughVector()
+void MyProgramFrame::IterateThroughVector()
 {
 	int vrc{};
 	for (auto& metadata : indexer.FolderIndex2)
@@ -201,7 +210,7 @@ void MyFrame::IterateThroughVector()
 }
 
 /*
-void MyFrame::DeleteLater_PopulateGrid() //need to delete 
+void MyProgramFrame::DeleteLater_PopulateGrid() //need to delete 
 {
 
 	DebugTesterMessageBox("update index");
@@ -250,7 +259,7 @@ void MyFrame::DeleteLater_PopulateGrid() //need to delete
 
 
 
-wxGrid* MyFrame::DirectoryGridConstructor()
+wxGrid* MyProgramFrame::DirectoryGridConstructor()
 {
 
 	// Set the number of rows and columns
@@ -277,7 +286,7 @@ wxGrid* MyFrame::DirectoryGridConstructor()
 
 	int a = DirectoryGrid->GetNumberRows();
 	std::string aa = "number of rows: " + std::to_string(a);
-	MyFrame::DebugTesterMessageBox(aa);
+	MyProgramFrame::DebugTesterMessageBox(aa);
 
 	// Set up  the column labels
 	DirectoryGrid->SetColLabelValue(c_ID, "File ID");
@@ -301,7 +310,7 @@ DirectoryGrid->AutoSizeColumns(true);
 	return DirectoryGrid;
 }
 
-void MyFrame::PopulateGridFromVector(wxGrid* DirectoryGrid, const int& GridColums)
+void MyProgramFrame::PopulateGridFromVector(wxGrid* DirectoryGrid, const int& GridColums)
 {
 	//indexer.DirectoryIndexBuilderUpdater();
 
@@ -423,7 +432,7 @@ void MyFrame::PopulateGridFromVector(wxGrid* DirectoryGrid, const int& GridColum
 
 
 
-void MyFrame::UpdateGridFromVector(wxGrid* DirectoryGrid, int GridRows)  
+void MyProgramFrame::UpdateGridFromVector(wxGrid* DirectoryGrid, int GridRows)  
 {
 	if (indexer.CountChangesSinceGridRefresh <= 0)
 	{
@@ -461,7 +470,7 @@ void MyFrame::UpdateGridFromVector(wxGrid* DirectoryGrid, int GridRows)
 }
 
 
-wxStaticText* MyFrame::DisplayCheckHDDSize()
+wxStaticText* MyProgramFrame::DisplayCheckHDDSize()
 {
 	//check hdd size
 	// Call the CheckHDDSizeAndSpace() function and get the formatted string
@@ -491,7 +500,7 @@ wxStaticText* MyFrame::DisplayCheckHDDSize()
 
 }
 
- void MyFrame::FetchDirectoryContents() 
+ void MyProgramFrame::FetchDirectoryContents() 
 {
 	//FileMetaData directory_contents{};
 	indexer.DirectoryIndexBuilderUpdater();
@@ -502,7 +511,7 @@ wxStaticText* MyFrame::DisplayCheckHDDSize()
 	return;
 }
 
-void MyFrame::ListDirectoryIndexer(wxCommandEvent& event)
+void MyProgramFrame::ListDirectoryIndexer(wxCommandEvent& event)
 {
 	
 

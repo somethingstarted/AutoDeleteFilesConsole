@@ -6,8 +6,9 @@
 #include <Windows.h>
 
 #include "DirectoryIndexer.h"
+#include "FileDeleterFrame.h"
 
-
+class MyProgramFrame;
 
 class FileSystemWatcher {
 public:
@@ -15,6 +16,8 @@ public:
     ~FileSystemWatcher();
     void StartMonitoring();
     void OnFileSystemChange(DWORD action, const std::wstring& fileName);
+
+
 
 private:
     static DWORD WINAPI WatcherThread(LPVOID param);
@@ -25,6 +28,7 @@ private:
     HANDLE exitEvent_;
 
     DirIndexing& indexer;
+    MyProgramFrame& myprogramframe;
 };
 
 

@@ -74,3 +74,14 @@ std::string Formatting::BitsWithSpaces(std::bitset<SizeOfBits> vv)		//move to se
 
 	return s;
 }
+
+std::wstring Formatting::StringToWstring(const std::string& input)
+{
+	std::wstring output;
+	output.reserve(input.size());
+	for (const auto& c : input)
+	{
+		output.push_back(static_cast<wchar_t>(c));
+	}
+	return output;
+}

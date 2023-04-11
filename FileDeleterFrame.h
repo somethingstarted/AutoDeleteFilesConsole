@@ -17,10 +17,15 @@
 #include "Formatting.h"
 #include "FileSystemWatcher.h"
 
-class MyFrame : public wxFrame {
+
+class FileSystemWatcher;
+
+class MyProgramFrame : public wxFrame 
+{
 public:
-	MyFrame(const wxString& title, DirIndexing& dirIndexing);
-	//MyFrame(); //build a destuctor someday? 
+	MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, FileSystemWatcher& fswatcher);
+
+	//MyProgramFrame(); //build a destuctor someday? 
 
 			//functions
 	void  ListDirectoryIndexer(wxCommandEvent&);
@@ -30,11 +35,11 @@ public:
 	//void PopulateGridFromVector(wxGrid* DirectoryGrid);
 	void InsertMoreRows(const int64& fi_size);
 	void IterateThroughVector();
-	void DeleteLater_PopulateGrid();
+	//void DeleteLater_PopulateGrid();
 	void FetchDirectoryContents();
 
 	void UpdateGridFromVector(wxGrid*, int);
-
+	
 
 	wxGrid* DirectoryGrid;
 
@@ -46,7 +51,7 @@ private:
 	 
 	DirIndexing& indexer;
 	Formatting& formatting;
-	FileSystemWatcher& FsWatcher;
+	FileSystemWatcher& fswatcher;
 	
 	const int GridColums{};
 	uint64 GridRows{};
@@ -61,8 +66,6 @@ private:
 	const uint8 c_RdWrtFlag = 5;
 	const uint8 c_DeleteFlag = 6;
 	const uint8 c_ArchiveFlag = 7;
-
-	 
 
 };
 

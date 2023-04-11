@@ -28,6 +28,7 @@ class Formatting
 		//std::string IntergerWithCommas(int64);
 		std::stringstream GetFileAge(chrono_ftt);
 		std::string BitsWithSpaces(std::bitset<SizeOfBits>);
+		std::wstring StringToWstring(const std::string&);
 };
 
 
