@@ -251,6 +251,7 @@
     <ClInclude Include="Formatting.h" />
     <ClInclude Include="OperatingSystemCheck.h" />
     <ClInclude Include="VersionNumber.h" />
+    <ClInclude Include="WatcherThread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoFileDeleter.cpp" />
@@ -259,6 +260,7 @@
     <ClCompile Include="FileSystemWatcher.cpp" />
     <ClCompile Include="Formatting.cpp" />
     <ClCompile Include="OperatingSystemCheck.cpp" />
+    <ClCompile Include="WatcherThread.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,11 +4,17 @@
 #include <iostream>
 #include <string>
 #include <Windows.h>
+#include <wx/thread.h>
 
 #include "DirectoryIndexer.h"
 #include "FileDeleterFrame.h"
+#include "WatcherThread.h"
 
 class MyProgramFrame;
+
+
+
+
 
 class FileSystemWatcher {
 public:
@@ -16,10 +22,12 @@ public:
     ~FileSystemWatcher();
     void StartMonitoring();
     void OnFileSystemChange(DWORD action, const std::wstring& fileName);
-
+    void WatcherThreadFunction();
 
 
 private:
+    
+
     static DWORD WINAPI WatcherThread(LPVOID param);
 
     std::wstring directory_;

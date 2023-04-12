@@ -26,7 +26,7 @@ public:
 	MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, FileSystemWatcher& fswatcher);
 
 	//MyProgramFrame(); //build a destuctor someday? 
-
+	
 			//functions
 	void  ListDirectoryIndexer(wxCommandEvent&);
 	wxStaticText*  DisplayCheckHDDSize();
@@ -53,6 +53,7 @@ private:
 	DirIndexing& indexer;
 	Formatting& formatting;
 	FileSystemWatcher& fswatcher;
+	//FileSystemWatcher& fswatcher_;
 	
 	const int GridColums{};
 	uint64 GridRows{};

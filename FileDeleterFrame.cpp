@@ -13,6 +13,7 @@ MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Form
 	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1200, 900)), 
 	indexer(indexer), 
 	fswatcher(fswatcher),
+	//fswatcher_(fswatcher),
 	 formatting(formatting) 
 	
 {
@@ -74,7 +75,8 @@ void MyProgramFrame::StartFileSystemWatcher() {
 	std::wstring MyPathWstring = formatting.StringToWstring(MyPathHere);
 
 	FileSystemWatcher FileSystemWatcher(MyPathWstring, indexer);
-	FileSystemWatcher.StartMonitoring();
+	//FileSystemWatcher.StartMonitoring();
+	fswatcher.StartMonitoring();
 }
 
 

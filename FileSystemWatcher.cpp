@@ -1,5 +1,7 @@
 #include "FileSystemWatcher.h"
+#include "WatcherThread.h"
 
+class FileDeleterFrame;
 class MyProgramFrame;
 
 FileSystemWatcher::FileSystemWatcher(const std::wstring& directory, DirIndexing& indexer)
@@ -42,7 +44,35 @@ FileSystemWatcher::~FileSystemWatcher()
     }
 }
 
-void FileSystemWatcher::StartMonitoring() 
+//void FileSystemWatcher::StartMonitoring() 
+//{
+//    directoryHandle_ = CreateFileW(
+//        directory_.c_str(),
+//        FILE_LIST_DIRECTORY,
+//        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+//        nullptr,
+//        OPEN_EXISTING,
+//        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
+//        nullptr);
+//
+//    if (directoryHandle_ == INVALID_HANDLE_VALUE) {
+//        std::cerr << "Failed to open directory: " << GetLastError() << std::endl;
+//        return;
+//    }
+//
+//    threadHandle_ = CreateThread(nullptr, 0, WatcherThread, this, 0, nullptr);
+//    if (threadHandle_ == nullptr) 
+//    {
+//        
+//        std::stringstream thiserror;
+//        thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
+//        wxString thiserrror = thiserror.str();
+//        wxMessageBox(thiserrror, "", wxICON_INFORMATION);
+//
+//        return;
+//    }
+//}
+void FileSystemWatcher::StartMonitoring()
 {
     directoryHandle_ = CreateFileW(
         directory_.c_str(),
@@ -58,18 +88,24 @@ void FileSystemWatcher::StartMonitoring()
         return;
     }
 
-    threadHandle_ = CreateThread(nullptr, 0, WatcherThread, this, 0, nullptr);
-    if (threadHandle_ == nullptr) 
+    // Create a new WatcherThread instance and start it
+    WatcherThread* thread = new WatcherThread(this);
+    if (thread->Create() == wxTHREAD_NO_ERROR)
     {
-        
+        thread->Run();
+    }
+    else
+    {
+        // Handle thread creation error
         std::stringstream thiserror;
         thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
         wxString thiserrror = thiserror.str();
         wxMessageBox(thiserrror, "", wxICON_INFORMATION);
-
-        return;
     }
 }
+
+
+
 
 DWORD WINAPI FileSystemWatcher::WatcherThread(LPVOID param)
 {
@@ -131,6 +167,18 @@ DWORD WINAPI FileSystemWatcher::WatcherThread(LPVOID param)
     return 0;
 }
 
+void FileSystemWatcher::StartMonitoring()
+{
+    WatcherThread* thread = new WatcherThread(this);
+    if (thread->Create() == wxTHREAD_NO_ERROR)
+    {
+        thread->Run();
+    }
+    else
+    {
+        // Handle thread creation error
+    }
+}
 
 void FileSystemWatcher::OnFileSystemChange(DWORD action, const std::wstring& fileName) 
 {

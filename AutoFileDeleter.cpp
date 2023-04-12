@@ -20,11 +20,11 @@ bool AutoDeleteFiles::OnInit() {
 	MyProgramFrame* frame = new MyProgramFrame("Auto File Deleter", indexer, formatting, fswatcher);
 
 	
-	 
+	
 
 	frame->Show(true);
 
-	frame->StartFileSystemWatcher();
+	//frame->StartFileSystemWatcher();
 
 	
 	 
