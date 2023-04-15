@@ -17,13 +17,14 @@ bool AutoDeleteFiles::OnInit() {
 	//FileSystemWatcher fswatcher;  
 
 
-	MyProgramFrame* frame = new MyProgramFrame("Auto File Deleter", indexer, formatting, fswatcher);
-
+	//MyProgramFrame* frame = new MyProgramFrame("Auto File Deleter", indexer, formatting, fswatcher);
+	MyProgramFrame* frame = new MyProgramFrame("Auto File Deleter", indexer, formatting, MyPathWstring);
+	
 	
 	
 
 	frame->Show(true);
-
+	frame->StartFileSystemWatcher();
 	//frame->StartFileSystemWatcher();
 
 	

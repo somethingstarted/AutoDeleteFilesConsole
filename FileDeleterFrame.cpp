@@ -7,15 +7,16 @@ namespace fs = std::filesystem;
 
 
 
+ 
+//MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, const std::wstring& directory)
+//	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(800, 600)),
+//	m_fileSystemWatcher(directory, indexer), indexer(indexer), formatting(formatting), fswatcher(fswatcher)
 
-//main window. replaces int main (doesn't work in "release build mode" though).
-MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, FileSystemWatcher& fswatcher)
-	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1200, 900)), 
-	indexer(indexer), 
-	fswatcher(fswatcher),
-	//fswatcher_(fswatcher),
-	 formatting(formatting) 
-	
+MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, const std::wstring& directory)
+    : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(800, 600)),
+      m_fileSystemWatcher(new FileSystemWatcher(directory, indexer)), formatting(formatting), fswatcher(fswatcher), indexer(indexer)
+
+
 {
 	
 	auto MyPathHere = fs::current_path().string();
@@ -70,13 +71,19 @@ MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Form
 
 }
 
+MyProgramFrame::~MyProgramFrame()
+{
+	delete m_fileSystemWatcher;
+}
+
 void MyProgramFrame::StartFileSystemWatcher() {
 	auto MyPathHere = fs::current_path().string();
 	std::wstring MyPathWstring = formatting.StringToWstring(MyPathHere);
 
 	FileSystemWatcher FileSystemWatcher(MyPathWstring, indexer);
 	//FileSystemWatcher.StartMonitoring();
-	fswatcher.StartMonitoring();
+	//fswatcher.StartMonitoring();
+	m_fileSystemWatcher->StartMonitoring();
 }
 
 

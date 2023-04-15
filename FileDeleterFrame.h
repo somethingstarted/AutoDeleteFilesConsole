@@ -23,7 +23,8 @@ class FileSystemWatcher;
 class MyProgramFrame : public wxFrame 
 {
 public:
-	MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, FileSystemWatcher& fswatcher);
+	MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, const std::wstring& directory);
+	~MyProgramFrame();
 
 	//MyProgramFrame(); //build a destuctor someday? 
 	
@@ -46,6 +47,7 @@ public:
 private:
 	void DebugTesterMessageBox(std::string, std::string, bool);
 	
+	FileSystemWatcher *  m_fileSystemWatcher;
 
 	int FrameWidth = 1'200;
 	int FrameHeight = 900;
@@ -53,6 +55,7 @@ private:
 	DirIndexing& indexer;
 	Formatting& formatting;
 	FileSystemWatcher& fswatcher;
+
 	//FileSystemWatcher& fswatcher_;
 	
 	const int GridColums{};
