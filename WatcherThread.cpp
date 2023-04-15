@@ -8,8 +8,9 @@ WatcherThread::WatcherThread(FileSystemWatcher* fileSystemWatcher)
 
 wxThread::ExitCode WatcherThread::Entry()
 {
-    // Call the original WatcherThread function here
-    m_fileSystemWatcher->WatcherThreadFunction();
+    wxMessageBox("WatcherThread::Entry", "", wxICON_INFORMATION);
+    // Call the original StaticWatcherThread function here
+    m_fileSystemWatcher->StaticWatcherThread();
     return (wxThread::ExitCode)0;
 }
 

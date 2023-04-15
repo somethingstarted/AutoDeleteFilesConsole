@@ -22,13 +22,16 @@ public:
     ~FileSystemWatcher();
     void StartMonitoring();
     void OnFileSystemChange(DWORD action, const std::wstring& fileName);
-    void WatcherThreadFunction();
-
-
-private:
     
 
-    static DWORD WINAPI WatcherThread(LPVOID param);
+    //define "thread" from FileSystemWatcher.cpp
+    WatcherThread* thread;
+    static DWORD WINAPI StaticWatcherThread(LPVOID param = {});
+
+private:
+    //void WatcherThreadFunction();
+
+    
 
     std::wstring directory_;
     HANDLE directoryHandle_;
@@ -37,6 +40,8 @@ private:
 
     DirIndexing& indexer;
     MyProgramFrame& myprogramframe;
+
+    WatcherThread* m_thread;
 };
 
 

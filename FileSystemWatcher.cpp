@@ -1,5 +1,5 @@
 #include "FileSystemWatcher.h"
-#include "WatcherThread.h"
+
 
 class FileDeleterFrame;
 class MyProgramFrame;
@@ -44,71 +44,13 @@ FileSystemWatcher::~FileSystemWatcher()
     }
 }
 
-//void FileSystemWatcher::StartMonitoring() 
-//{
-//    directoryHandle_ = CreateFileW(
-//        directory_.c_str(),
-//        FILE_LIST_DIRECTORY,
-//        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-//        nullptr,
-//        OPEN_EXISTING,
-//        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
-//        nullptr);
-//
-//    if (directoryHandle_ == INVALID_HANDLE_VALUE) {
-//        std::cerr << "Failed to open directory: " << GetLastError() << std::endl;
-//        return;
-//    }
-//
-//    threadHandle_ = CreateThread(nullptr, 0, WatcherThread, this, 0, nullptr);
-//    if (threadHandle_ == nullptr) 
-//    {
-//        
-//        std::stringstream thiserror;
-//        thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
-//        wxString thiserrror = thiserror.str();
-//        wxMessageBox(thiserrror, "", wxICON_INFORMATION);
-//
-//        return;
-//    }
-//}
-void FileSystemWatcher::StartMonitoring()
+
+
+
+
+DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
 {
-    directoryHandle_ = CreateFileW(
-        directory_.c_str(),
-        FILE_LIST_DIRECTORY,
-        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-        nullptr,
-        OPEN_EXISTING,
-        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
-        nullptr);
-
-    if (directoryHandle_ == INVALID_HANDLE_VALUE) {
-        std::cerr << "Failed to open directory: " << GetLastError() << std::endl;
-        return;
-    }
-
-    // Create a new WatcherThread instance and start it
-    WatcherThread* thread = new WatcherThread(this);
-    if (thread->Create() == wxTHREAD_NO_ERROR)
-    {
-        thread->Run();
-    }
-    else
-    {
-        // Handle thread creation error
-        std::stringstream thiserror;
-        thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
-        wxString thiserrror = thiserror.str();
-        wxMessageBox(thiserrror, "", wxICON_INFORMATION);
-    }
-}
-
-
-
-
-DWORD WINAPI FileSystemWatcher::WatcherThread(LPVOID param)
-{
+    wxMessageBox("FileSystemWatcher::StaticWatcherThread", "", wxICON_INFORMATION);
     FileSystemWatcher* watcher = static_cast<FileSystemWatcher*>(param);
     const DWORD bufferSize = 1024;
     BYTE buffer[bufferSize] = { 0 };
@@ -169,20 +111,71 @@ DWORD WINAPI FileSystemWatcher::WatcherThread(LPVOID param)
 
 void FileSystemWatcher::StartMonitoring()
 {
+    wxMessageBox("StartMonitoring", "", wxICON_INFORMATION);
+    directoryHandle_ = CreateFileW(
+        directory_.c_str(),
+        FILE_LIST_DIRECTORY,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        nullptr,
+        OPEN_EXISTING,
+        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
+        nullptr);
+
+    if (directoryHandle_ == INVALID_HANDLE_VALUE) {
+        std::cerr << "Failed to open directory: " << GetLastError() << std::endl;
+        return;
+    }
+
+
+
+    //threadHandle_ = CreateThread(nullptr, 0, StaticWatcherThread, this, 0, nullptr);
     WatcherThread* thread = new WatcherThread(this);
+
+
+    if (thread == nullptr)
+    {
+        wxMessageBox("Failed to create WatcherThread instance", "", wxICON_ERROR);
+        return;
+    }
     if (thread->Create() == wxTHREAD_NO_ERROR)
     {
         thread->Run();
+        
     }
     else
     {
         // Handle thread creation error
+        std::stringstream thiserror;
+        thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
+        wxString thiserrror = thiserror.str();
+        
     }
 }
 
 void FileSystemWatcher::OnFileSystemChange(DWORD action, const std::wstring& fileName) 
 {
-
-    wxMessageBox("on file sys change WORKS!", "", wxICON_INFORMATION);
+    wxMessageBox("OnFileSystemChange", "", wxICON_INFORMATION);
+    std::wcout << L"Action: " << action << L", File: " << fileName << std::endl;
+    /*switch (action)
+    {
+	case FILE_ACTION_ADDED:
+		std::wcout << L"File added: " << fileName << std::endl;
+		break;
+	case FILE_ACTION_REMOVED:
+		std::wcout << L"File removed: " << fileName << std::endl;
+		break;
+	case FILE_ACTION_MODIFIED:
+		std::wcout << L"File modified: " << fileName << std::endl;
+		break;
+	case FILE_ACTION_RENAMED_OLD_NAME:
+		std::wcout << L"File renamed (old name): " << fileName << std::endl;
+		break;
+	case FILE_ACTION_RENAMED_NEW_NAME:
+		std::wcout << L"File renamed (new name): " << fileName << std::endl;
+		break;
+	default:
+		std::wcout << L"Unknown action: " << action << std::endl;
+		break;
+	}*/
 
 }

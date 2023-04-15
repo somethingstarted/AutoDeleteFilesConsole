@@ -157,7 +157,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 	FileMetaData metadata = {};
 
 
-
+	
 	if (!fs::exists(dir) && !fs::is_directory(dir))		//make sure program is running in valid directory
 	{
 		std::cout << "failed at: CreateListFromFiles()" ; //replace with wxMessageBox
