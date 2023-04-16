@@ -10,7 +10,7 @@
 #include "FileDeleterFrame.h"
 #include "WatcherThread.h"
 
-class MyProgramFrame;
+class FileDeleterFrame;
 
 
 
@@ -23,6 +23,7 @@ public:
     void StartMonitoring();
     void OnFileSystemChange(DWORD action, const std::wstring& fileName);
     
+    bool FileSystemIsWatched{};
 
     //define "thread" from FileSystemWatcher.cpp
     WatcherThread* thread;
@@ -30,7 +31,7 @@ public:
 
 private:
     //void WatcherThreadFunction();
-
+    
     
 
     std::wstring directory_;
@@ -39,7 +40,7 @@ private:
     HANDLE exitEvent_;
 
     DirIndexing& indexer;
-    MyProgramFrame& myprogramframe;
+    FileDeleterFrame& myprogramframe;
 
     WatcherThread* m_thread;
 };

@@ -2,7 +2,7 @@
 
 
 class FileDeleterFrame;
-class MyProgramFrame;
+class FileDeleterFrame;
 
 FileSystemWatcher::FileSystemWatcher(const std::wstring& directory, DirIndexing& indexer)
     : directory_(directory), directoryHandle_(nullptr), threadHandle_(nullptr), exitEvent_(nullptr), indexer(indexer), myprogramframe(myprogramframe)
@@ -85,7 +85,8 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
 
                 offset += fni->NextEntryOffset;
                 watcher->OnFileSystemChange(fni->Action, fileName);
-            } while (fni->NextEntryOffset != 0);
+            } 
+            while (fni->NextEntryOffset != 0);
         }
         else
         {
@@ -95,16 +96,26 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
             thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
             wxString thiserrror = thiserror.str();
             wxMessageBox(thiserrror, "", wxICON_INFORMATION);
-            if (error == 5 || error == 6) {
+
+            if (error == 5 || error == 6) 
+            {
                 // Sleep for 1 second and try again
-                Sleep(1000);
+                //Sleep(1000);
+                    
+                wxSleep(2); //seconds
                 continue;
             }
-            else {
+            else 
+            {
                 break;
             }
+
         }
+
     }
+
+  
+    
 
     return 0;
 }

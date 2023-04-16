@@ -18,7 +18,7 @@ bool AutoDeleteFiles::OnInit() {
 
 
 	//MyProgramFrame* frame = new MyProgramFrame("Auto File Deleter", indexer, formatting, fswatcher);
-	MyProgramFrame* frame = new MyProgramFrame("Auto File Deleter", indexer, formatting, MyPathWstring);
+	FileDeleterFrame* frame = new FileDeleterFrame("Auto File Deleter", indexer, formatting, MyPathWstring);
 	
 	
 	

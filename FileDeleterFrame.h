@@ -20,11 +20,11 @@
 
 class FileSystemWatcher;
 
-class MyProgramFrame : public wxFrame 
+class FileDeleterFrame : public wxFrame 
 {
 public:
-	MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, const std::wstring& directory);
-	~MyProgramFrame();
+	FileDeleterFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, const std::wstring& directory);
+	~FileDeleterFrame();
 
 	//MyProgramFrame(); //build a destuctor someday? 
 	
