@@ -106,49 +106,7 @@ bool HasWritePermissions(const fs::path& entry) {
 		return false;
 	}
 }
-		// i dont thin i need these anymore: 
-			//ConvertToWxArrayString needs a valid overload for each type used in struct FileMetaData
-		//uint64, fs::path, int16, chrono_ftt
-				//just return strait binary for now for the int16
 
-
-//wxString ConvertToWxArrayString(uint64 Request)
-//{
-//	wxString mystring = wxString::Format(wxT("%i"), Request);
-//
-//
-//	return mystring;
-//}
-//
-//wxString ConvertToWxArrayString(fs::path Request)
-//{
-//	std::string pathbuffer = Request.string();
-//
-//	wxString mystring = wxString::Format(wxT("%i"), pathbuffer);
-//
-//
-//	return mystring;
-//
-//}
-//	
-//wxString ConvertToWxArrayString(int16 Request)
-//{
-//	wxString mystring = wxString::Format(wxT("%i"), Request);
-//
-//
-//	return mystring;
-//}
-//
-//wxString ConvertToWxArrayString(chrono_ftt Request)
-//{
-//	std::string MyChronoString;
-//	MyChronoString =  std::format("{:%a %F %r }", metadata.TimeLastModified);
-//	auto mystring = wxString::Format(wxT("%s"), MyChronoString);
-//
-//
-//	return mystring;
-//}
-//		// i dont think i need these above here anymore ^ 
 
 int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main version, which will stay
 {

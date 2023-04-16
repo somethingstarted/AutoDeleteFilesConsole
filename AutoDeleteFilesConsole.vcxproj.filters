@@ -39,6 +39,9 @@
     <ClInclude Include="WatcherThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LoggingTool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectoryIndexer.cpp">
@@ -60,6 +63,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WatcherThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggingTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

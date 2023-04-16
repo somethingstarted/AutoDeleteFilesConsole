@@ -10,6 +10,8 @@
 #include "FileDeleterFrame.h"
 #include "WatcherThread.h"
 
+#include "LoggingTool.h"
+
 class FileDeleterFrame;
 
 

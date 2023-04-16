@@ -16,6 +16,7 @@
 #include "DirectoryIndexer.h"
 #include "Formatting.h"
 #include "FileSystemWatcher.h"
+#include "LoggingTool.h"
 
 
 class FileSystemWatcher;

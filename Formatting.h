@@ -8,6 +8,7 @@
 namespace fs = std::filesystem;
 using chrono_ftt = std::filesystem::file_time_type;
 using chrono_duration = std::chrono::system_clock::duration;
+using chrono_sys_clock = std::chrono::system_clock;
 
 const int SizeOfBits = 16;
 

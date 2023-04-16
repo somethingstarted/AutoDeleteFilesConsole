@@ -1,0 +1,15 @@
+2023-04-16 06:50:20.5359513	INFO	created new FileSystemWatcher thread
+2023-04-16 06:50:20.5520978	INFO	created new FileSystemWatcher thread
+2023-04-16 06:50:20.6076071	INFO	created new FileSystemWatcher thread
+2023-04-16 06:50:38.9899143	INFO	deleted a FileSystemWatcher thread
+2023-04-16 06:50:38.9907663	INFO	deleted a FileSystemWatcher thread
+2023-04-16 06:50:39.7536007	ERROR	watcher thread started. last error though: 0
+
+2023-04-16 06:52:08.4140016	INFO	created new FileSystemWatcher thread
+2023-04-16 06:52:08.4291054	INFO	created new FileSystemWatcher thread
+2023-04-16 06:52:08.4823660	INFO	created new FileSystemWatcher thread
+2023-04-16 06:52:09.6224084	INFO	deleted a FileSystemWatcher thread
+2023-04-16 06:52:09.6231142	INFO	deleted a FileSystemWatcher thread
+2023-04-16 06:52:10.2198417	ERROR	watcher thread started. last error though: 0
+
+2023-04-16 06:52:10.2203035	MISC	 watcher->FileSystemIsWatched = true;

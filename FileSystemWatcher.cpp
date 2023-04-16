@@ -4,9 +4,13 @@
 class FileDeleterFrame;
 class FileDeleterFrame;
 
+LoggingTool* logging_tool{};
+
 FileSystemWatcher::FileSystemWatcher(const std::wstring& directory, DirIndexing& indexer)
     : directory_(directory), directoryHandle_(nullptr), threadHandle_(nullptr), exitEvent_(nullptr), indexer(indexer), myprogramframe(myprogramframe)
 {
+    logging_tool->AppendToLog("created new FileSystemWatcher thread", OutputType::_INFO);
+
     directoryHandle_ = CreateFileW(
         directory_.c_str(),
         GENERIC_READ,
@@ -29,6 +33,7 @@ FileSystemWatcher::FileSystemWatcher(const std::wstring& directory, DirIndexing&
 
 FileSystemWatcher::~FileSystemWatcher() 
 {
+    logging_tool->AppendToLog("deleted a FileSystemWatcher thread", OutputType::_INFO);
     if (directoryHandle_ != nullptr) {
         CloseHandle(directoryHandle_);
     }
@@ -50,8 +55,10 @@ FileSystemWatcher::~FileSystemWatcher()
 
 DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
 {
-    wxMessageBox("FileSystemWatcher::StaticWatcherThread", "", wxICON_INFORMATION);
+    //wxMessageBox("FileSystemWatcher::StaticWatcherThread", "", wxICON_INFORMATION);
+    //logging_tool->AppendToLog("FileSystemWatcher::StaticWatcherThread", OutputType::_INFO);
     FileSystemWatcher* watcher = static_cast<FileSystemWatcher*>(param);
+    
     const DWORD bufferSize = 1024;
     BYTE buffer[bufferSize] = { 0 };
     DWORD bytesRead = 0;
@@ -59,16 +66,41 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
 
     std::stringstream thiserror;
     thiserror << "watcher thread started. last error though: " << GetLastError() << std::endl;
-    wxString thiserrror = thiserror.str();
-    wxMessageBox(thiserrror, "", wxICON_INFORMATION);
-    while (true)
+    logging_tool->AppendToLog(thiserror.str(), OutputType::_logERROR);
+    int DoWhileCounter{};
+
+    do 
     {
+
+        //watcher->FileSystemIsWatched = true;
+        logging_tool->AppendToLog(" watcher->FileSystemIsWatched = true;");
+        if (watcher->directoryHandle_ == nullptr)
+        {
+            logging_tool->AppendToLog("Directory handle is nullptr. Cannot watch the directory.", OutputType::_logERROR);
+            break; // Exit the loop
+        } //other errors here?
+        else if (buffer == nullptr)
+        {
+            logging_tool->AppendToLog("buffer is nullptr. Cannot watch the directory.", OutputType::_logERROR);
+            break;
+        }
+        else if (bufferSize == 0)
+        {
+            logging_tool->AppendToLog("bufferSize is 0. Cannot watch the directory.", OutputType::_logERROR);
+            break;
+        }
+        else if (bytesRead == 0)
+        {
+            logging_tool->AppendToLog("bytesRead is 0. Cannot watch the directory.", OutputType::_logERROR);
+            break;
+        }
+                //i'm tempted to make this a try catch block
         if (ReadDirectoryChangesW(
-            watcher->directoryHandle_,
+            watcher->directoryHandle_, //*new question* what happens if this is nullptr? it threw an exception just now
             buffer,
             bufferSize,
             TRUE,
-            FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE,
+            FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE, //*new qustion* this should work no matter what kind of change happens
             &bytesRead,
             nullptr,
             nullptr))
@@ -97,26 +129,29 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
             wxString thiserrror = thiserror.str();
             wxMessageBox(thiserrror, "", wxICON_INFORMATION);
 
-            if (error == 5 || error == 6) 
+                    //recoverable errors go here - maybe just one if, catch all errors, and then print all errors to log?
+             if (error == 5 || error == 6) 
             {
                 // Sleep for 1 second and try again
                 //Sleep(1000);
                     
-                wxSleep(2); //seconds
+                
                 continue;
             }
-            else 
-            {
-                break;
-            }
 
+
+            wxSleep(1); //seconds
         }
 
-    }
-
+    } while (true);
   
+    watcher->FileSystemIsWatched = false;
+
+    logging_tool->AppendToLog(" watcher->FileSystemIsWatched = false;");
     
 
+
+    
     return 0;
 }
 

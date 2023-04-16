@@ -249,6 +249,7 @@
     <ClInclude Include="FileDeleterFrame.h" />
     <ClInclude Include="FileSystemWatcher.h" />
     <ClInclude Include="Formatting.h" />
+    <ClInclude Include="LoggingTool.h" />
     <ClInclude Include="OperatingSystemCheck.h" />
     <ClInclude Include="VersionNumber.h" />
     <ClInclude Include="WatcherThread.h" />
@@ -259,6 +260,7 @@
     <ClCompile Include="FileDeleterFrame.cpp" />
     <ClCompile Include="FileSystemWatcher.cpp" />
     <ClCompile Include="Formatting.cpp" />
+    <ClCompile Include="LoggingTool.cpp" />
     <ClCompile Include="OperatingSystemCheck.cpp" />
     <ClCompile Include="WatcherThread.cpp" />
   </ItemGroup>
