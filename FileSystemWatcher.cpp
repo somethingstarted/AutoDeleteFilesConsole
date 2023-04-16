@@ -6,6 +6,7 @@ class FileDeleterFrame;
 
 LoggingTool* logging_tool{};
 
+
 FileSystemWatcher::FileSystemWatcher(const std::wstring& directory, DirIndexing& indexer)
     : directory_(directory), directoryHandle_(nullptr), threadHandle_(nullptr), exitEvent_(nullptr), indexer(indexer), myprogramframe(myprogramframe)
 {
@@ -69,82 +70,91 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
     logging_tool->AppendToLog(thiserror.str(), OutputType::_logERROR);
     int DoWhileCounter{};
 
-    do 
+    //check to see if DirIndexing::FolderIndex2 is empty 
+    if (DirectorIndexer::FolderIndex2.empty()) 
     {
+		logging_tool->AppendToLog("DirIndexing::FolderIndex2 is empty. Cannot watch the directory.", OutputType::_logERROR);
+		return 0;
+	}
+    else
+    {
+        do
+        {
 
-        //watcher->FileSystemIsWatched = true;
-        logging_tool->AppendToLog(" watcher->FileSystemIsWatched = true;");
-        if (watcher->directoryHandle_ == nullptr)
-        {
-            logging_tool->AppendToLog("Directory handle is nullptr. Cannot watch the directory.", OutputType::_logERROR);
-            break; // Exit the loop
-        } //other errors here?
-        else if (buffer == nullptr)
-        {
-            logging_tool->AppendToLog("buffer is nullptr. Cannot watch the directory.", OutputType::_logERROR);
-            break;
-        }
-        else if (bufferSize == 0)
-        {
-            logging_tool->AppendToLog("bufferSize is 0. Cannot watch the directory.", OutputType::_logERROR);
-            break;
-        }
-        else if (bytesRead == 0)
-        {
-            logging_tool->AppendToLog("bytesRead is 0. Cannot watch the directory.", OutputType::_logERROR);
-            break;
-        }
-                //i'm tempted to make this a try catch block
-        if (ReadDirectoryChangesW(
-            watcher->directoryHandle_, //*new question* what happens if this is nullptr? it threw an exception just now
-            buffer,
-            bufferSize,
-            TRUE,
-            FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE, //*new qustion* this should work no matter what kind of change happens
-            &bytesRead,
-            nullptr,
-            nullptr))
-        {
-            DWORD offset = 0;
-            FILE_NOTIFY_INFORMATION* fni = nullptr;
-
-            do
+            //watcher->FileSystemIsWatched = true;
+            logging_tool->AppendToLog(" watcher->FileSystemIsWatched = true;");
+            if (watcher->directoryHandle_ == nullptr || buffer == nullptr || bufferSize == 0 || bytesRead == 0)
             {
-                fni = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(buffer + offset);
-                std::wstring fileName(fni->FileName, fni->FileNameLength / sizeof(wchar_t));
+                if (watcher->directoryHandle_ == nullptr)
+                {
+                    logging_tool->AppendToLog("Directory handle is nullptr. Cannot watch the directory.", OutputType::_logERROR);
+                }
+                else if (buffer == nullptr)
+                {
+                    logging_tool->AppendToLog("buffer is nullptr. Cannot watch the directory.", OutputType::_logERROR);
+                }
+                else if (bufferSize == 0)
+                {
+                    logging_tool->AppendToLog("bufferSize is 0. Cannot watch the directory.", OutputType::_logERROR);
+                }
+                else if (bytesRead == 0)
+                {
+                    logging_tool->AppendToLog("bytesRead is 0. Cannot watch the directory.", OutputType::_logERROR);
+                }
 
-                std::wcout << L"Action: " << fni->Action << L", File: " << fileName << std::endl;
-
-                offset += fni->NextEntryOffset;
-                watcher->OnFileSystemChange(fni->Action, fileName);
-            } 
-            while (fni->NextEntryOffset != 0);
-        }
-        else
-        {
-            DWORD error = GetLastError();
-            std::cerr << "ReadDirectoryChangesW failed: " << error << std::endl;
-            std::stringstream thiserror;
-            thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
-            wxString thiserrror = thiserror.str();
-            wxMessageBox(thiserrror, "", wxICON_INFORMATION);
-
-                    //recoverable errors go here - maybe just one if, catch all errors, and then print all errors to log?
-             if (error == 5 || error == 6) 
-            {
-                // Sleep for 1 second and try again
-                //Sleep(1000);
-                    
-                
-                continue;
+                break; // Exit the loop
             }
 
+            //i'm tempted to make this a try catch block
+            if (ReadDirectoryChangesW(
+                watcher->directoryHandle_, //*new question* what happens if this is nullptr? it threw an exception just now
+                buffer,
+                bufferSize,
+                TRUE,
+                FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE, //*new qustion* this should work no matter what kind of change happens
+                &bytesRead,
+                nullptr,
+                nullptr))
+            {
+                DWORD offset = 0;
+                FILE_NOTIFY_INFORMATION* fni = nullptr;
 
-            wxSleep(1); //seconds
-        }
+                do
+                {
+                    fni = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(buffer + offset);
+                    std::wstring fileName(fni->FileName, fni->FileNameLength / sizeof(wchar_t));
 
-    } while (true);
-  
+                    std::wcout << L"Action: " << fni->Action << L", File: " << fileName << std::endl;
+
+                    offset += fni->NextEntryOffset;
+                    watcher->OnFileSystemChange(fni->Action, fileName);
+                } while (fni->NextEntryOffset != 0);
+            }
+            else
+            {
+                DWORD error = GetLastError();
+                std::cerr << "ReadDirectoryChangesW failed: " << error << std::endl;
+                std::stringstream thiserror;
+                thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
+                wxString thiserrror = thiserror.str();
+                wxMessageBox(thiserrror, "", wxICON_INFORMATION);
+
+                //recoverable errors go here - maybe just one if, catch all errors, and then print all errors to log?
+                if (error == 5 || error == 6)
+                {
+                    // Sleep for 1 second and try again
+                    //Sleep(1000);
+
+
+                    continue;
+                }
+
+
+                wxSleep(1); //seconds
+            }
+
+        } while (true);
+    }
     watcher->FileSystemIsWatched = false;
 
     logging_tool->AppendToLog(" watcher->FileSystemIsWatched = false;");
