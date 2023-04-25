@@ -12,7 +12,7 @@
 #include <sstream>  
 #include <tuple>
 #include "Formatting.h"
-
+#include "LoggingTool.h"
 
 
 //namespace fs = std::filesystem;
@@ -71,7 +71,7 @@ private:
 	Formatting& formatting;
 
 
-	
+	LoggingTool* logging_tool{};
 };
 
 
@@ -106,4 +106,3 @@ public:
 
 
 	//uint64, fs::path, int16, chrono_ftt
-	

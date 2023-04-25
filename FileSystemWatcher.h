@@ -13,7 +13,8 @@
 #include "LoggingTool.h"
 
 class FileDeleterFrame;
-
+class DirectoryIndexer;
+class LoggingTool;
 
 
 
@@ -45,6 +46,7 @@ private:
     FileDeleterFrame& myprogramframe;
 
     WatcherThread* m_thread;
+    
 };
 
 

@@ -10,7 +10,7 @@
 #include <wx/grid.h>
 #include <wx/button.h>
 #include <filesystem>
-
+#include <memory>
 #include "VersionNumber.h"
 
 #include "DirectoryIndexer.h"
@@ -48,7 +48,7 @@ public:
 private:
 	void DebugTesterMessageBox(std::string, std::string, bool);
 	
-	FileSystemWatcher *  m_fileSystemWatcher;
+	std::unique_ptr<FileSystemWatcher> m_fileSystemWatcher;
 
 	int FrameWidth = 1'200;
 	int FrameHeight = 900;
@@ -82,6 +82,5 @@ class MainClass
 {
 public:
 	std::string FileExtensionsToTrack;
-
 
 };

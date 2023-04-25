@@ -73,7 +73,7 @@ FileDeleterFrame::FileDeleterFrame(const wxString& title, DirIndexing& indexer, 
 
 FileDeleterFrame::~FileDeleterFrame()
 {
-	delete m_fileSystemWatcher;
+	// Nothing to do here, as std::unique_ptr takes care of deleting the FileSystemWatcher object
 }
 
 void FileDeleterFrame::StartFileSystemWatcher() {
@@ -93,7 +93,7 @@ void FileDeleterFrame::DebugTesterMessageBox(std::string Message = {}, std::stri
 	bool AllPopUpsOn = 0;
 	if (AlwaysPopUp == 1 || AllPopUpsOn == 1)
 	{
-		wxMessageBox(Message, Title, wxICON_INFORMATION);
+		//wxMessageBox(Message, Title, wxICON_INFORMATION);
 	}
 
 	
@@ -253,7 +253,8 @@ wxGrid* FileDeleterFrame::DirectoryGridConstructor()
 
 	int a = DirectoryGrid->GetNumberRows();
 	std::string aa = "number of rows: " + std::to_string(a);
-	FileDeleterFrame::DebugTesterMessageBox(aa);
+	
+	//FileDeleterFrame::DebugTesterMessageBox(aa);
 
 	// Set up  the column labels
 	DirectoryGrid->SetColLabelValue(c_ID, "File ID");

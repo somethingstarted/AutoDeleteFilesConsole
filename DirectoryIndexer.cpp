@@ -17,39 +17,51 @@ std::vector<FileMetaData> DailyAverageUsage{}; //add to the class before finishi
 		//legacy purposes
 //std::string formatting.IntergerWithCommas(int);
  
+
  
 void DirIndexing::CheckForDeletedFilesInVector() //didn't really do anything i think. could be removed later. 
 {
+	logging_tool->AppendToLog("Checking for deleted files in vector.", OutputType::VERBOSE);
+
 	//std::cout << "\n\n\tchecking for deleted files still in Index:\n";
 	int i{};
 	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
+		logging_tool->AppendToLog("\t\tnext file", OutputType::VERBOSE);
 		
 		if (fs::exists(metadata.FileName))
 		{
+			std::stringstream ss;
+			ss << "\t\t\t" << i << "already exsists. skipping file: " << metadata.FileName.string();
+			logging_tool->AppendToLog(ss.str(), OutputType::_INFO);
 			return;
 		}
 		else
 		{
-			std::cout << "***Does not exist:\t" << metadata.FileName.string() << "\n";
+			std::stringstream ss;
+			ss << "\t\t\t" << i << "Does not exist:\t" << metadata.FileName.string();
+			logging_tool->AppendToLog(ss.str(), OutputType::_INFO);
 			FolderIndex2.erase(FolderIndex2.begin() + i);
 		}
 		i++;
 	}
-	std::cout << "\n";
+	
 	return;
 }
  
 
 auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 {
+	logging_tool->AppendToLog("Calculating daily space usage.", OutputType::VERBOSE);
 	int64 BufferSize = 0;
 	chrono_ftt BufferDay1{};
 
 	if (!DirIndexing::FolderIndex2.empty())
 	{
-		std::cout << "calculating daily space usage:\n";
+		
 		BufferDay1 = std::chrono::floor<std::chrono::days>(DirIndexing::FolderIndex2.at(0).TimeLastModified);
+		logging_tool->AppendToLog("calculating daily space usage:\n", OutputType::VERBOSE);
+		
 	}
 	else
 		std::cerr << "Calculating daily usage failed for some reason.\n";
@@ -118,8 +130,10 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 	
 	if (!fs::exists(dir) && !fs::is_directory(dir))		//make sure program is running in valid directory
 	{
-		std::cout << "failed at: CreateListFromFiles()" ; //replace with wxMessageBox
-		std::cin.get();
+
+		std::stringstream sss;
+		sss << "failed at: CreateListFromFiles()";
+		logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE);
 		//exit(-1);
 	}
 
@@ -136,7 +150,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 		metadata.FileExtension = entry.path().extension();
 
 			//have permission to edit
-		//std::cerr << "before: " << std::bitset<16>(metadata.FileChoicesFlags) << "\n";
+		//std::cerr << "before: " << std::bitset<16>(metadata.FileChoicesFlags) ;
 		if (HasWritePermissions(entry) == true)	
 			metadata.FileChoicesFlags = metadata.FileChoicesFlags | FileFlags::ff_CanBeWrittenTo;
 		else
@@ -172,20 +186,28 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 
 		if (std::any_of(IgnoreList.cbegin(), IgnoreList.cend(), [&metadata](std::string p) { return p == metadata.FileExtension.string(); }))
 		{
-			//std::cout << "** ignoring:\t" << metadata.FileName.string() << "\n";
+			std::stringstream sss;
+			sss << "\t\t** ignoring:\t" << metadata.FileName.string();
+			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE);
 		}
 
 		else if (std::any_of(DirIndexing::FolderIndex2.cbegin(), DirIndexing::FolderIndex2.cend(), [&metadata](const FileMetaData& file) { return file.FileName == metadata.FileName; }))
 		{
-			//std::cout << "** Skipping:\t" << metadata.FileName.string() << "\tFile's already in vector." << "\n";
+			
+			std::stringstream sss;
+			sss << "\t\t** Skipping:\t" << metadata.FileName.string() << "\tFile's already in vector." ;
+			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE);
 		}
 				 
 				//only add ones of this extension  -- extra careful
 		else 
 		if (std::any_of(OkayList.cbegin(), OkayList.cend(), [&metadata](std::string p) { return p == metadata.FileExtension.string(); }))
 		{
-			//std::cout << "adding: " << metadata.FileName.string() << "\n";
+		 
 			DirIndexing::FolderIndex2.push_back(metadata);
+			std::stringstream sss;
+			sss << "\t\tadding: " << metadata.FileIDnumber << "\t" << metadata.FileName.string() ;
+			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE);
 		
 											//
 											//end of ignore list 
@@ -193,14 +215,15 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 
 			//don't let metadata go above 99'999.
 			//only count up if it adds the file to the vector
-		if (metadata.FileIDnumber < 99'999)
-		{
-			metadata.FileIDnumber++;
-		}
-		else if (metadata.FileIDnumber > 99'999 || metadata.FileIDnumber <= 0)
-		{
-			metadata.FileIDnumber = 1;
-		}
+			if (metadata.FileIDnumber < 99'999)
+			{
+				metadata.FileIDnumber++;
+
+			}
+			else if (metadata.FileIDnumber > 99'999 || metadata.FileIDnumber <= 0)
+			{
+				metadata.FileIDnumber = 1;
+			}
 
 		}
 
@@ -304,7 +327,7 @@ std::string  DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new U
 		 OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
 
 		 s = OSS1.str() + OSSa.str() + /*OSS2.str() + OSSb.str() +*/ OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
-
+		 logging_tool->AppendToLog(s, OutputType::VERBOSE);
 		 //std::cout << s;
 
 		 //std::this_thread::sleep_for(std::chrono::seconds(4));
@@ -467,7 +490,7 @@ int64 DirIndexing::ListFolderIndexConsole(bool DisplayFileAge, bool DisplayFileS
 			auto FileAgeDays2 = GetFileAge(metadata.TimeLastModified);
 			std::cout << "\t\t" << FileAgeDays2.str();
 		}
-		std::cout << "\n";
+		
 	}
 	return 0;
 }

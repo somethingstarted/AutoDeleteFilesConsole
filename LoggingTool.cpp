@@ -1,5 +1,6 @@
 #include "LoggingTool.h"
 
+//rewrite the log to output to csv instead of txt. 
 
 void LoggingTool::AppendToLog(std::string TextForPrintingToLog, int16 LogOutputType)
 {

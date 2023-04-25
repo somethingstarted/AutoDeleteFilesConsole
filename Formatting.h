@@ -32,6 +32,36 @@ class Formatting
 		std::wstring StringToWstring(const std::string&);
 };
 
+//////////////////////////////////////////////////
+// 
+// figure out what compiler you're using
+// just for help with debugging. 
+// i plan on open sourcing this and shit someday
+// 
+//////////////////////////////////////////////
 
-//std::string IntergerWithCommas(int64);
-//std::string BitsWithSpaces(std::bitset<SizeOfBits>);
+
+// Define MSVC_VERSION macro based on _MSC_VER
+// Define COMPILER_VERSION macro based on the compiler used
+#if _MSC_VER == 1500
+#define COMPILER_VERSION "MSVC++ 9.0"
+#elif _MSC_VER == 1400
+#define COMPILER_VERSION "MSVC++ 8.0"
+#elif _MSC_VER == 1310
+#define COMPILER_VERSION "MSVC++ 7.1"
+#elif _MSC_VER == 1300
+#define COMPILER_VERSION "MSVC++ 7.0"
+#elif _MSC_VER == 1200
+#define COMPILER_VERSION "MSVC++ 6.0"
+#elif _MSC_VER == 1100
+#define COMPILER_VERSION "MSVC++ 5.0"
+#elif _MSC_VER >= 1930 && _MSC_VER < 1940
+#define COMPILER_VERSION "MSVC++ 2022 (17.x)"
+#elif _MSC_VER >= 1920 && _MSC_VER < 1930
+#define COMPILER_VERSION "MSVC++ 2019 (16.x)"
+#elif __clang__
+#define COMPILER_VERSION "Clang " __clang_version__
+#else
+#define COMPILER_VERSION "Unknown Compiler"
+#endif
+
