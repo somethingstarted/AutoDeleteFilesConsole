@@ -1,8 +1,8 @@
 #include "LoggingTool.h"
-
+#include "Formatting.h"
 //rewrite the log to output to csv instead of txt. 
 
-void LoggingTool::AppendToLog(std::string TextForPrintingToLog, int16 LogOutputType)
+void LoggingTool::AppendToLog(std::string TextForPrintingToLog, uint16 LogOutputType, uint16 WhichClassUsed )
 {
 
     std::chrono::time_point RightNow = chrono_sys_clock::now();
@@ -11,6 +11,7 @@ void LoggingTool::AppendToLog(std::string TextForPrintingToLog, int16 LogOutputT
     std::ofstream outputFile{};
     int LogFileVers{};
     std::exception e{};
+    int JustifyRight = Formatting::GetLengthOf_T(WhichClassUsed);
     //try to open the file, if can't, create a new one with same file name but incremented +01
     try 
     {
@@ -34,7 +35,7 @@ void LoggingTool::AppendToLog(std::string TextForPrintingToLog, int16 LogOutputT
     else if (outputFile.is_open()) 
     {
         // Write the string to the file
-        outputFile << RightNow << "\t" << CheckOutputType(LogOutputType) << "\t" << TextForPrintingToLog << "\n";
+        outputFile << RightNow << "\t" << WhichClassUsed << CheckOutputType(LogOutputType) << "\t" << TextForPrintingToLog << "\n";
 
         // Close the file
         outputFile.close();
@@ -45,7 +46,7 @@ void LoggingTool::AppendToLog(std::string TextForPrintingToLog, int16 LogOutputT
     return;
 }
 
-std::string LoggingTool::CheckOutputType(int16 LogOutputType)
+std::string LoggingTool::CheckOutputType(uint16 LogOutputType)
 {
     std::string a{};
     if (LogOutputType & OutputType::_logERROR)
@@ -109,7 +110,7 @@ std::string LoggingTool::CheckOutputType(int16 LogOutputType)
 }
 
 
-
+LoggingTool* logging_tool = nullptr; // Initialize the pointer to nullptr
 
 
 

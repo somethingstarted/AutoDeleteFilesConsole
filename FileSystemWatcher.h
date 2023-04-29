@@ -9,12 +9,12 @@
 #include "DirectoryIndexer.h"
 #include "FileDeleterFrame.h"
 #include "WatcherThread.h"
-
 #include "LoggingTool.h"
+
 
 class FileDeleterFrame;
 class DirectoryIndexer;
-class LoggingTool;
+class Formatting;
 
 
 
@@ -29,7 +29,7 @@ public:
     bool FileSystemIsWatched{};
 
     //define "thread" from FileSystemWatcher.cpp
-    WatcherThread* thread;
+    WatcherThread* thread;      //why is this both public AND private? 
     static DWORD WINAPI StaticWatcherThread(LPVOID param = {});
 
 private:
@@ -44,6 +44,8 @@ private:
 
     DirIndexing& indexer;
     FileDeleterFrame& myprogramframe;
+
+    LoggingTool* logging_tool{};
 
     WatcherThread* m_thread;
     

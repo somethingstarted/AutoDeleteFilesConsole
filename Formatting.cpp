@@ -1,6 +1,11 @@
 #include "Formatting.h"
+#include "LoggingTool.h"
 
-
+//////////////////////////////
+// some of these
+// can be templitized
+// like the comma and space seperator
+//////////////////////////////
 std::string Formatting::IntergerWithCommas(int64 vv = {})		//move to seperate class named "formatting" someday. 
 {		
 		//if vv is empty, but vvv isn't, use vvv. 
@@ -18,6 +23,24 @@ std::string Formatting::IntergerWithCommas(int64 vv = {})		//move to seperate cl
 
 	return s;
 }
+
+std::string Formatting::BitsWithSpaces(std::bitset<SizeOfBits> vv)		//move to seperate class named "formatting" someday. 
+{
+	//std::string s = std::to_string(vv);
+	std::string s = vv.to_string();
+
+	int64 n = s.length() - 4;
+	//int64 end = (vv >= 0) ? 0 : 1; // Support for negative numbers
+	//int64 end = 0;
+	while (n > 0) {
+		s.insert(n, " ");
+		n -= 4;
+	}
+
+	return s;
+}
+
+
 
 std::stringstream Formatting::GetFileAge(chrono_ftt TimeLastModified2) //time last modified 
 {
@@ -59,21 +82,7 @@ std::stringstream Formatting::GetFileAge(chrono_ftt TimeLastModified2) //time la
 	return ss_buffer;
 }
 
-std::string Formatting::BitsWithSpaces(std::bitset<SizeOfBits> vv)		//move to seperate class named "formatting" someday. 
-{
-	//std::string s = std::to_string(vv);
-	std::string s = vv.to_string();
 
-	int64 n = s.length() - 4;
-	//int64 end = (vv >= 0) ? 0 : 1; // Support for negative numbers
-	//int64 end = 0;
-	while (n > 0) {
-		s.insert(n, " ");
-		n -= 4;
-	}
-
-	return s;
-}
 
 std::wstring Formatting::StringToWstring(const std::string& input)
 {

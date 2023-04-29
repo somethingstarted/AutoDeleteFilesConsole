@@ -11,8 +11,10 @@
 #include <wx/button.h>
 #include <filesystem>
 #include <memory>
-#include "VersionNumber.h"
+#include <locale>
+#include <codecvt>
 
+#include "VersionNumber.h"
 #include "DirectoryIndexer.h"
 #include "Formatting.h"
 #include "FileSystemWatcher.h"
@@ -26,22 +28,23 @@ class FileDeleterFrame : public wxFrame
 public:
 	FileDeleterFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, const std::wstring& directory);
 	~FileDeleterFrame();
+ 
+	void			ListDirectoryIndexer(wxCommandEvent&);
+	wxStaticText*	DisplayCheckHDDSize();
+	wxGrid*			DirectoryGridConstructor();
+	void			PopulateGridFromVector(wxGrid* DirectoryGrid, const int& GridColums);
+	void			InsertMoreRows(const int64& fi_size);
+	void			IterateThroughVector();
+	void			FetchDirectoryContents();
+	void			StartFileSystemWatcher();
+	void			UpdateGridFromVector(wxGrid*, int);
+	void			OnGridRefreshButtonClicked(wxCommandEvent& event);
 
-	//MyProgramFrame(); //build a destuctor someday? 
-	
-			//functions
-	void  ListDirectoryIndexer(wxCommandEvent&);
-	wxStaticText*  DisplayCheckHDDSize();
-	wxGrid* DirectoryGridConstructor();
-	void PopulateGridFromVector(wxGrid* DirectoryGrid, const int& GridColums);
-	//void PopulateGridFromVector(wxGrid* DirectoryGrid);
-	void InsertMoreRows(const int64& fi_size);
-	void IterateThroughVector();
-	//void DeleteLater_PopulateGrid();
-	void FetchDirectoryContents();
-	void StartFileSystemWatcher();
-	void UpdateGridFromVector(wxGrid*, int);
-	
+
+	/////////////////////////////////////////////
+	// 
+	//		3rd party stuff down here:
+	/////////////////////////////////////////////
 
 	wxGrid* DirectoryGrid;
 
@@ -56,14 +59,10 @@ private:
 	DirIndexing& indexer;
 	Formatting& formatting;
 	FileSystemWatcher& fswatcher;
+	LoggingTool* logging_tool{};
 
-	//FileSystemWatcher& fswatcher_;
-	
-	const int GridColums{};
-	uint64 GridRows{};
-
-			//if I need more then 256 colums i'll just... make it an int16. why the hell would i need more than 256 colums? i'm not remaking excel. 
-					//this is simpler than using bitwise math to do 1 through 8. 
+	//if I need more then 256 colums i'll just... make it an int16. why the hell would i need more than 256 colums? i'm not remaking excel. 
+		//this is simpler than using bitwise math to do 1 through 8. 
 	const uint8 c_ID = 0;
 	const uint8 c_Name = 1;
 	const uint8 c_Size = 2;
@@ -72,7 +71,10 @@ private:
 	const uint8 c_RdWrtFlag = 5;
 	const uint8 c_DeleteFlag = 6;
 	const uint8 c_ArchiveFlag = 7;
-
+	
+	const int GridColums{};
+	uint64 GridRows{};
+ 
 };
 
  

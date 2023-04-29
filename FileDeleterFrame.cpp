@@ -1,35 +1,20 @@
 #include "FileDeleterFrame.h"
-#include <locale>
-#include <codecvt>
+
 
 
 namespace fs = std::filesystem;
-
-
-
  
-//MyProgramFrame::MyProgramFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, const std::wstring& directory)
-//	: wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(800, 600)),
-//	m_fileSystemWatcher(directory, indexer), indexer(indexer), formatting(formatting), fswatcher(fswatcher)
+constexpr auto ID_BUTTON = 1; //refresh button
+
+
 
 FileDeleterFrame::FileDeleterFrame(const wxString& title, DirIndexing& indexer, Formatting& formatting, const std::wstring& directory)
     : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(800, 600)),
       m_fileSystemWatcher(new FileSystemWatcher(directory, indexer)), formatting(formatting), fswatcher(fswatcher), indexer(indexer)
-
-
 {
 	
 	auto MyPathHere = fs::current_path().string();
 
-
-	//auto MyPathHere = std::filesystem::current_path().string();
-	/*std::wstring MyPathWstring = formatting.StringToWstring(MyPathHere);
-
-	FileSystemWatcher FileSystemWatcher(MyPathWstring, indexer);
-	FileSystemWatcher.StartMonitoring();*/
-			//these need to be moved to it's own function later
-
-		
 	std::stringstream WindowTitle;
 	WindowTitle << "Auto File Deleter " << APP_VERSION;
 	wxString newtitle = WindowTitle.str();
@@ -37,48 +22,37 @@ FileDeleterFrame::FileDeleterFrame(const wxString& title, DirIndexing& indexer, 
 
 	DirectoryGrid = DirectoryGridConstructor(); //?
 
-
 			//preprocessor stuff. might move to after window is built
 	indexer.DirectoryIndexBuilderUpdater();
-
-	
 
 			//build the contents of whole frame
 	wxStaticText* HddDetailsWindow = DisplayCheckHDDSize();
 	wxGrid* DirAsGrid = DirectoryGridConstructor();
 
 	// Add a button
-	wxButton* myButton = new wxButton(this, wxID_ANY, wxT("Refresh Directory"));
-	myButton->Bind(wxEVT_BUTTON, &FileDeleterFrame::ListDirectoryIndexer, this);
-
+	wxButton* GridRefreshButton = new wxButton(this, ID_BUTTON, wxT("Refresh Directory")); // Use ID_BUTTON instead of wxID_ANY
+	GridRefreshButton->Bind(wxEVT_BUTTON, &FileDeleterFrame::OnGridRefreshButtonClicked, this); // Bind to OnGridRefreshButtonClicked
+	
 
 		// Set up a sizer
 	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
 	sizer->Add(HddDetailsWindow, 0, wxALIGN_LEFT | wxALL, 2);
-	sizer->Add(myButton, 0, wxALIGN_RIGHT | wxALL, 2);
+	sizer->Add(GridRefreshButton, 0, wxALIGN_RIGHT | wxALL, 2);
 	sizer->Add(DirAsGrid, 1, wxEXPAND | wxALL, 2);
 	
 	//sizer->Add(listBox, 1, wxEXPAND | wxALL, 2);
 	SetSizer(sizer);
-
-	// Connect the button to the ListDirectoryIndexer function
-
-
-	//GetBestSize();
-	
-	
-
-
 }
 
 FileDeleterFrame::~FileDeleterFrame()
-{
-	// Nothing to do here, as std::unique_ptr takes care of deleting the FileSystemWatcher object
+{// Nothing to do here, as std::unique_ptr takes care of deleting the FileSystemWatcher object
 }
 
-void FileDeleterFrame::StartFileSystemWatcher() {
+void FileDeleterFrame::StartFileSystemWatcher() 
+{
 	auto MyPathHere = fs::current_path().string();
 	std::wstring MyPathWstring = formatting.StringToWstring(MyPathHere);
+
 
 	FileSystemWatcher FileSystemWatcher(MyPathWstring, indexer);
 	//FileSystemWatcher.StartMonitoring();
@@ -95,7 +69,7 @@ void FileDeleterFrame::DebugTesterMessageBox(std::string Message = {}, std::stri
 	{
 		//wxMessageBox(Message, Title, wxICON_INFORMATION);
 	}
-
+	logging_tool->AppendToLog("Message Box" + Message, OutputType::VERBOSE);
 	
 }
 
@@ -118,13 +92,14 @@ void FileDeleterFrame::InsertMoreRows(const int64& RowsToAdd)
 
 void FileDeleterFrame::IterateThroughVector()
 {
+	logging_tool->AppendToLog("IterateThroughVector", OutputType::VERBOSE);
 	int vrc{};
 	for (auto& metadata : indexer.FolderIndex2)
 	{
 
 
 		int IDnum = indexer.FolderIndex2.at(vrc).FileIDnumber;
-
+		
 
 		std::stringstream IDnumString{};
 		IDnumString << std::right << std::setw(6) << formatting.IntergerWithCommas(IDnum) << " ";
@@ -182,6 +157,9 @@ void FileDeleterFrame::IterateThroughVector()
 			FlaggedArchivalPrintout = " ";
 			CellGreenWarning = false;
 		}
+
+		//logging tool output file name, extension, ID, size, and flags on one line
+		logging_tool->AppendToLog("File Name: " + FileName_ForGrid.ToStdString() + " ID: " + FileID_ForGrid.ToStdString() + " Size: " + FileSize_ForGrid.ToStdString() + " Flags: " + FlaggedDeletionPrintout.ToStdString() + " " + FlaggedArchivalPrintout.ToStdString(), OutputType::VERBOSE);
 
 
 
@@ -398,6 +376,10 @@ void FileDeleterFrame::PopulateGridFromVector(wxGrid* DirectoryGrid, const int& 
 	}
 }
 
+void FileDeleterFrame::OnGridRefreshButtonClicked(wxCommandEvent& event)
+{
+	DebugTesterMessageBox("grid refresh button clicked");
+}
 
 
 void FileDeleterFrame::UpdateGridFromVector(wxGrid* DirectoryGrid, int GridRows)  
@@ -436,6 +418,8 @@ void FileDeleterFrame::UpdateGridFromVector(wxGrid* DirectoryGrid, int GridRows)
 	}
 	
 }
+
+
 
 
 wxStaticText* FileDeleterFrame::DisplayCheckHDDSize()

@@ -21,26 +21,26 @@ std::vector<FileMetaData> DailyAverageUsage{}; //add to the class before finishi
  
 void DirIndexing::CheckForDeletedFilesInVector() //didn't really do anything i think. could be removed later. 
 {
-	logging_tool->AppendToLog("Checking for deleted files in vector.", OutputType::VERBOSE);
+	logging_tool->AppendToLog("Checking for deleted files in vector.", OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 
 	//std::cout << "\n\n\tchecking for deleted files still in Index:\n";
 	int i{};
 	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
-		logging_tool->AppendToLog("\t\tnext file", OutputType::VERBOSE);
+		logging_tool->AppendToLog("\t\tnext file", OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 		
 		if (fs::exists(metadata.FileName))
 		{
 			std::stringstream ss;
 			ss << "\t\t\t" << i << "already exsists. skipping file: " << metadata.FileName.string();
-			logging_tool->AppendToLog(ss.str(), OutputType::_INFO);
+			logging_tool->AppendToLog(ss.str(), OutputType::_INFO, WhichClassUsed::DirectoryIndexing_Which);
 			return;
 		}
 		else
 		{
 			std::stringstream ss;
 			ss << "\t\t\t" << i << "Does not exist:\t" << metadata.FileName.string();
-			logging_tool->AppendToLog(ss.str(), OutputType::_INFO);
+			logging_tool->AppendToLog(ss.str(), OutputType::_INFO, WhichClassUsed::DirectoryIndexing_Which);
 			FolderIndex2.erase(FolderIndex2.begin() + i);
 		}
 		i++;
@@ -52,7 +52,7 @@ void DirIndexing::CheckForDeletedFilesInVector() //didn't really do anything i t
 
 auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 {
-	logging_tool->AppendToLog("Calculating daily space usage.", OutputType::VERBOSE);
+	logging_tool->AppendToLog("Calculating daily space usage.", OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 	int64 BufferSize = 0;
 	chrono_ftt BufferDay1{};
 
@@ -60,7 +60,7 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 	{
 		
 		BufferDay1 = std::chrono::floor<std::chrono::days>(DirIndexing::FolderIndex2.at(0).TimeLastModified);
-		logging_tool->AppendToLog("calculating daily space usage:\n", OutputType::VERBOSE);
+		logging_tool->AppendToLog("calculating daily space usage:\n", OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 		
 	}
 	else
@@ -122,7 +122,10 @@ bool HasWritePermissions(const fs::path& entry) {
 
 int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main version, which will stay
 {
-
+	//list folderindex2's ram id
+	std::stringstream ss;
+	ss << "FolderIndex2's RAM ID: " << &FolderIndex2;
+	logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 
 	FileMetaData metadata = {};
 
@@ -133,7 +136,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 
 		std::stringstream sss;
 		sss << "failed at: CreateListFromFiles()";
-		logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE);
+		logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 		//exit(-1);
 	}
 
@@ -188,7 +191,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 		{
 			std::stringstream sss;
 			sss << "\t\t** ignoring:\t" << metadata.FileName.string();
-			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE);
+			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 		}
 
 		else if (std::any_of(DirIndexing::FolderIndex2.cbegin(), DirIndexing::FolderIndex2.cend(), [&metadata](const FileMetaData& file) { return file.FileName == metadata.FileName; }))
@@ -196,7 +199,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 			
 			std::stringstream sss;
 			sss << "\t\t** Skipping:\t" << metadata.FileName.string() << "\tFile's already in vector." ;
-			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE);
+			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 		}
 				 
 				//only add ones of this extension  -- extra careful
@@ -207,7 +210,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 			DirIndexing::FolderIndex2.push_back(metadata);
 			std::stringstream sss;
 			sss << "\t\tadding: " << metadata.FileIDnumber << "\t" << metadata.FileName.string() ;
-			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE);
+			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 		
 											//
 											//end of ignore list 
@@ -327,7 +330,7 @@ std::string  DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new U
 		 OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
 
 		 s = OSS1.str() + OSSa.str() + /*OSS2.str() + OSSb.str() +*/ OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
-		 logging_tool->AppendToLog(s, OutputType::VERBOSE);
+		 logging_tool->AppendToLog(s, OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 		 //std::cout << s;
 
 		 //std::this_thread::sleep_for(std::chrono::seconds(4));
@@ -561,26 +564,6 @@ uint64 DirIndexing::DirectoryIndexBuilderUpdater()  //keep. BUILD and REBUILD an
 	CheckForDeletedFilesInVector();
 
 	CreateListFromFiles(MyPath);
-
-	//SortListChronologically();
-
-	//ListFolderIndexConsole(true, false, false, false);
-
-	// CalculateDailySpaceUsage(); // unfinished
-
-
-	//average daily file size amount written, for files in database are:
-
-
-
-
-	//HDD usage is / # days left expected before deletion required: 
-
-	
-
-	//the oldest file is: 
-
-
 
 	return 0;
 }

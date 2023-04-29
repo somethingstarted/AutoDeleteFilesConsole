@@ -1,1 +1,0 @@
-C:\Users\somet\source\repos\AutoDeleteFilesConsole\AutoDeleteFilesConsole\x64\Debug\AutoDeleteFilesConsole.vcxproj.CopyComplete
