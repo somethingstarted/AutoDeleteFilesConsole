@@ -39,7 +39,7 @@ public:
 	static constexpr uint16 _logERROR = 0b0000000000000001;
 	static constexpr uint16 _WARNING = 0b0000000000000010;
 	static constexpr uint16 _INFO = 0b0000000000000100;
-	static constexpr uint16 DEBUG = 0b0000000000001000;
+	static constexpr uint16 VECTOR = 0b0000000000001000;
 	static constexpr uint16 MISC = 0b0000000000010000; // default
 
 	static constexpr uint16 VERBOSE = 0b0000000000100000;
@@ -48,9 +48,9 @@ public:
 	static constexpr uint16 SECURITY = 0b0000000100000000;
 	static constexpr uint16 AUDIT = 0b0000001000000000;
 	static constexpr uint16 METRICS = 0b0000010000000000;
-	static constexpr uint16 MAINTENANCE = 0b0000100000000000;
 	static constexpr uint16 SYS_INFO = 0b0001000000000000;
 
+	static constexpr uint16 EXITING_APP = 0b0000100000000000;
 	static constexpr uint16 SkipLine = 0b0010000000000000; //only do once when starting the program again
 
 	static constexpr uint16 RESET_LOG = 0b1111'1111'1111'1111;
@@ -64,6 +64,7 @@ class LoggingTool
 public:
 	void AppendToLog(std::string LoggingString = "", uint16 LogOutputType = OutputType::MISC, uint16 WhichClassUsed = WhichClassUsed::MiscClass_Which);
 	std::string CheckOutputType(uint16 LogOutputType);
+	std::string ClassReferenced(uint16 WhichClassUsed);
 
 	//char length of longest class name (for formatting class in WhichClassUsed)
 	static constexpr int8 MaxClassNameLength = 23;

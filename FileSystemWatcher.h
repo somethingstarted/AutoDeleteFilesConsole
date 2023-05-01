@@ -25,7 +25,7 @@ public:
     ~FileSystemWatcher();
     void StartMonitoring();
     void OnFileSystemChange(DWORD action, const std::wstring& fileName);
-    
+    int GetFolderIndexSize();
     bool FileSystemIsWatched{};
 
     //define "thread" from FileSystemWatcher.cpp

@@ -1,6 +1,6 @@
 #include "LoggingTool.h"
 #include "Formatting.h"
-//rewrite the log to output to csv instead of txt. 
+
 
 void LoggingTool::AppendToLog(std::string TextForPrintingToLog, uint16 LogOutputType, uint16 WhichClassUsed )
 {
@@ -11,7 +11,7 @@ void LoggingTool::AppendToLog(std::string TextForPrintingToLog, uint16 LogOutput
     std::ofstream outputFile{};
     int LogFileVers{};
     std::exception e{};
-    int JustifyRight = Formatting::GetLengthOf_T(WhichClassUsed);
+    
     //try to open the file, if can't, create a new one with same file name but incremented +01
     try 
     {
@@ -20,8 +20,7 @@ void LoggingTool::AppendToLog(std::string TextForPrintingToLog, uint16 LogOutput
     catch (std::exception& e)
     {
                 //TODO - create a functional system w/ a vector that queues up functions. 
-                    //https://chat.openai.com/c/17cda66b-9571-4c6c-b7d8-fca4a66f9581
-		outputFile.open(FileNameOfLog + std::to_string(LogFileVers) + ".txt", std::ios::app);
+ 		outputFile.open(FileNameOfLog + std::to_string(LogFileVers) + ".txt", std::ios::app);
 	}	
 	
 	
@@ -34,16 +33,61 @@ void LoggingTool::AppendToLog(std::string TextForPrintingToLog, uint16 LogOutput
     }
     else if (outputFile.is_open()) 
     {
-        // Write the string to the file
-        outputFile << RightNow << "\t" << WhichClassUsed << CheckOutputType(LogOutputType) << "\t" << TextForPrintingToLog << "\n";
-
-        // Close the file
-        outputFile.close();
-        //std::cout << "Successfully wrote to the file." << std::endl;
+          outputFile << RightNow << "\t" << ClassReferenced(WhichClassUsed) << CheckOutputType(LogOutputType) << "\t" << TextForPrintingToLog << "\n";
+           outputFile.close();
     }
   
 
     return;
+}
+
+std::string LoggingTool::ClassReferenced(uint16 WhichClassUsed)
+{
+
+    std::string s{};
+    //match WhichClassUsed in "class WhichClassUsed" to the corresponding string except for the _Which portion of the text
+    if (WhichClassUsed & WhichClassUsed::AutoDeleteFiles_Which)
+    {
+        s =  "AutoDeleteFiles\t\t";
+    }
+    else if (WhichClassUsed & WhichClassUsed::DirectoryIndexing_Which)
+    {
+        s = "DirectoryIndexing\t";
+    }
+    else if (WhichClassUsed & WhichClassUsed::FileDeleterFrame_Which)
+    {
+        s = "FileDeleterFrame\t";
+	}
+    else if (WhichClassUsed & WhichClassUsed::Formatting_Which)
+    {
+        s = "Formatting\t\t";
+	}
+    else if (WhichClassUsed & WhichClassUsed::LoggingTool_Which)
+    {
+        s = "LoggingTool\t\t";
+	}
+    else if (WhichClassUsed & WhichClassUsed::FileSystemWatcher_Which)
+    {
+		s = "FileSystemWatcher\t";
+    }
+    else if (WhichClassUsed & WhichClassUsed::WatcherThread_Which)
+    {
+        s = "WatcherThread\t\t";
+    }
+    else if (WhichClassUsed & WhichClassUsed::FileSystemWatcherThread_Which)
+    {
+		s = "FileSystemWatcherThread\t";
+	}
+    else if (WhichClassUsed & WhichClassUsed::MiscClass_Which)
+    {
+		s = "MiscClass\t\t";
+	}
+    else
+    {
+        s = "Unknown/ext\t\t";
+	}
+
+    return s;
 }
 
 std::string LoggingTool::CheckOutputType(uint16 LogOutputType)
@@ -61,9 +105,9 @@ std::string LoggingTool::CheckOutputType(uint16 LogOutputType)
     {
         a = "INFO";
     }
-    else if (LogOutputType & OutputType::DEBUG)
+    else if (LogOutputType & OutputType::VECTOR)
     {
-        a = "DEBUG";
+        a = "VECTOR";
     }
     else if (LogOutputType & OutputType::AUDIT)
     {
@@ -89,9 +133,9 @@ std::string LoggingTool::CheckOutputType(uint16 LogOutputType)
     {
         a = "METRICS";
     }
-    else if (LogOutputType & OutputType::MAINTENANCE)
+    else if (LogOutputType & OutputType::EXITING_APP)
     {
-        a = "MAINTENANCE";
+        a = "EXITING_APP";
     }
     else if (LogOutputType & OutputType::SYS_INFO)
     {

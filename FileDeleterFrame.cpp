@@ -92,7 +92,7 @@ void FileDeleterFrame::InsertMoreRows(const int64& RowsToAdd)
 
 void FileDeleterFrame::IterateThroughVector()
 {
-	logging_tool->AppendToLog("IterateThroughVector", OutputType::VERBOSE);
+	logging_tool->AppendToLog("IterateThroughVector ", OutputType::VERBOSE);
 	int vrc{};
 	for (auto& metadata : indexer.FolderIndex2)
 	{
@@ -159,7 +159,7 @@ void FileDeleterFrame::IterateThroughVector()
 		}
 
 		//logging tool output file name, extension, ID, size, and flags on one line
-		logging_tool->AppendToLog("File Name: " + FileName_ForGrid.ToStdString() + " ID: " + FileID_ForGrid.ToStdString() + " Size: " + FileSize_ForGrid.ToStdString() + " Flags: " + FlaggedDeletionPrintout.ToStdString() + " " + FlaggedArchivalPrintout.ToStdString(), OutputType::VERBOSE);
+		logging_tool->AppendToLog("File Name: " + FileName_ForGrid.ToStdString() + " ID: " + FileID_ForGrid.ToStdString() + " Size: " + FileSize_ForGrid.ToStdString(), OutputType::VERBOSE);
 
 
 
@@ -331,6 +331,10 @@ void FileDeleterFrame::PopulateGridFromVector(wxGrid* DirectoryGrid, const int& 
 				CellGreenWarning = false;
 			}
 
+			//print the info that the current row is holding into the logging_tool
+			std::stringstream ss;
+			ss << "\t" << FileID_ForGrid << "\t" << FileName_ForGrid << "\t" << FileSize_ForGrid << "\t" << FileAgeDays_ForGrid;
+			logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileDeleterFrame_Which);
 
 			//put that row into a column.
 			DirectoryGrid->SetCellValue(vrc, c_ID, FileID_ForGrid);
@@ -378,7 +382,9 @@ void FileDeleterFrame::PopulateGridFromVector(wxGrid* DirectoryGrid, const int& 
 
 void FileDeleterFrame::OnGridRefreshButtonClicked(wxCommandEvent& event)
 {
-	DebugTesterMessageBox("grid refresh button clicked");
+	//trigger indexer->CheckForDeletedFilesInVector()
+	indexer.CheckForDeletedFilesInVector();
+	logging_tool->AppendToLog("grid refresh button clicked", WhichClassUsed::FileDeleterFrame_Which );
 }
 
 

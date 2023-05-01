@@ -27,19 +27,19 @@ void DirIndexing::CheckForDeletedFilesInVector() //didn't really do anything i t
 	int i{};
 	for (auto& metadata : DirIndexing::FolderIndex2)
 	{
-		logging_tool->AppendToLog("\t\tnext file", OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
+		logging_tool->AppendToLog("\tnext file", OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
 		
 		if (fs::exists(metadata.FileName))
 		{
 			std::stringstream ss;
-			ss << "\t\t\t" << i << "already exsists. skipping file: " << metadata.FileName.string();
+			ss << "\t" << i << "already exsists. skipping file: " << metadata.FileName.string();
 			logging_tool->AppendToLog(ss.str(), OutputType::_INFO, WhichClassUsed::DirectoryIndexing_Which);
 			return;
 		}
 		else
 		{
 			std::stringstream ss;
-			ss << "\t\t\t" << i << "Does not exist:\t" << metadata.FileName.string();
+			ss << "\t" << i << "Does not exist:\t" << metadata.FileName.string();
 			logging_tool->AppendToLog(ss.str(), OutputType::_INFO, WhichClassUsed::DirectoryIndexing_Which);
 			FolderIndex2.erase(FolderIndex2.begin() + i);
 		}
@@ -97,7 +97,6 @@ auto DirIndexing::CalculateDailySpaceUsage() //unfinished
 			//resetting for next round
 		TotalFilesCounted++;
 	
-				//days were not same, so...	
 	}
 	return;
 }
@@ -113,7 +112,8 @@ bool HasWritePermissions(const fs::path& entry) {
 
 		return owner_write || group_write || others_write;
 	}
-	else {
+	else 
+	{
 		std::cerr << "File does not exist!" << std::endl;
 		return false;
 	}
@@ -124,8 +124,9 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 {
 	//list folderindex2's ram id
 	std::stringstream ss;
-	ss << "FolderIndex2's RAM ID: " << &FolderIndex2;
-	logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
+	int siiiize = FolderIndex2.size();
+	ss << "Before iterating, CreateListFromFiles > FolderIndex2's RAM ID: " << &FolderIndex2 << "vec size: " << siiiize;
+	logging_tool->AppendToLog(ss.str(), OutputType::VECTOR, WhichClassUsed::DirectoryIndexing_Which);
 
 	FileMetaData metadata = {};
 
@@ -136,7 +137,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 
 		std::stringstream sss;
 		sss << "failed at: CreateListFromFiles()";
-		logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
+		logging_tool->AppendToLog(sss.str(), OutputType::VECTOR, WhichClassUsed::DirectoryIndexing_Which);
 		//exit(-1);
 	}
 
@@ -191,7 +192,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 		{
 			std::stringstream sss;
 			sss << "\t\t** ignoring:\t" << metadata.FileName.string();
-			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
+			logging_tool->AppendToLog(sss.str(), OutputType::VECTOR, WhichClassUsed::DirectoryIndexing_Which);
 		}
 
 		else if (std::any_of(DirIndexing::FolderIndex2.cbegin(), DirIndexing::FolderIndex2.cend(), [&metadata](const FileMetaData& file) { return file.FileName == metadata.FileName; }))
@@ -199,7 +200,7 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 			
 			std::stringstream sss;
 			sss << "\t\t** Skipping:\t" << metadata.FileName.string() << "\tFile's already in vector." ;
-			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
+			logging_tool->AppendToLog(sss.str(), OutputType::VECTOR, WhichClassUsed::DirectoryIndexing_Which);
 		}
 				 
 				//only add ones of this extension  -- extra careful
@@ -210,14 +211,15 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 			DirIndexing::FolderIndex2.push_back(metadata);
 			std::stringstream sss;
 			sss << "\t\tadding: " << metadata.FileIDnumber << "\t" << metadata.FileName.string() ;
-			logging_tool->AppendToLog(sss.str(), OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
-		
+			logging_tool->AppendToLog(sss.str(), OutputType::VECTOR, WhichClassUsed::DirectoryIndexing_Which);
 											//
 											//end of ignore list 
 		
 
 			//don't let metadata go above 99'999.
 			//only count up if it adds the file to the vector
+			//might change it later if this becomes public 
+			//and people have more than 10,000 files in a folder
 			if (metadata.FileIDnumber < 99'999)
 			{
 				metadata.FileIDnumber++;
@@ -235,6 +237,10 @@ int DirIndexing::CreateListFromFiles(fs::path const& dir) //this is the main ver
 
 	}
 
+	ss = {};
+	siiiize = FolderIndex2.size();
+	ss << "**AFTER iterating, CreateListFromFiles > FolderIndex2's RAM ID: " << &FolderIndex2 << "vec size: " << siiiize;
+	logging_tool->AppendToLog(ss.str(), OutputType::VECTOR, WhichClassUsed::DirectoryIndexing_Which);
 
 	return 0;
 }
@@ -330,7 +336,7 @@ std::string  DirIndexing::CheckHDDSizeAndSpace(fs::path, bool IsVerbose) //new U
 		 OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
 
 		 s = OSS1.str() + OSSa.str() + /*OSS2.str() + OSSb.str() +*/ OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
-		 logging_tool->AppendToLog(s, OutputType::VERBOSE, WhichClassUsed::DirectoryIndexing_Which);
+		 logging_tool->AppendToLog(s, OutputType::SYS_INFO, WhichClassUsed::DirectoryIndexing_Which);
 		 //std::cout << s;
 
 		 //std::this_thread::sleep_for(std::chrono::seconds(4));
@@ -377,16 +383,16 @@ int8  DirIndexing::CheckHDDSizeAndSpaceConsole(fs::path, bool IsVerbose) // lega
 		std::stringstream OSS4;
 		std::stringstream OSSd;
 
-		OSS1 << "Size Of Disk\t\t";
+		OSS1 << "\tSize Of Disk\t\t";
 		OSSa << std::right << std::setw(width) << formatting.IntergerWithCommas(SizeOfDisk) << "\n";
-		OSS2 << "Free Space\t\t";
+		OSS2 << "\tFree Space\t\t";
 		OSSb << std::right << std::setw(width) << formatting.IntergerWithCommas(FreeSpace) << "\n";
-		OSS3 << "Avaliable Space:\t";
+		OSS3 << "\tAvaliable Space:\t";
 		OSSc << std::right << std::setw(width) << formatting.IntergerWithCommas(AvaliableSpace) << "\n";
-		OSS4 << "Disk Percent Left:\t";
+		OSS4 << "\tDisk Percent Left:\t";
 		OSSd << std::right << std::setw(width) << HDDPercentageLeft << "%" << "\n";
 
-		s = OSS1.str() + OSSa.str() + OSS2.str() + OSSb.str() + OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
+		s = "\n" + OSS1.str() + OSSa.str() + OSS2.str() + OSSb.str() + OSS3.str() + OSSc.str() + OSS4.str() + OSSd.str();
 
 		std::cout << s;
 
@@ -491,7 +497,7 @@ int64 DirIndexing::ListFolderIndexConsole(bool DisplayFileAge, bool DisplayFileS
 		if (DisplayFileAge == true)
 		{
 			auto FileAgeDays2 = GetFileAge(metadata.TimeLastModified);
-			std::cout << "\t\t" << FileAgeDays2.str();
+			std::cout << "\t" << FileAgeDays2.str();
 		}
 		
 	}
@@ -509,10 +515,6 @@ void DirIndexing::SortListChronologically()
 	{
 		return struct1.TimeLastModified > struct2.TimeLastModified;
 	});
-
-
-
-
 	return;
 } //dont need anymore.
 		//dont need
@@ -524,9 +526,6 @@ void DirIndexing::SortListAlphabetically()
 	{
 		return struct1.FileName > struct2.FileName;
 	});
-
-
-
 
 	return;
 }	  //dont need anymore?
@@ -541,11 +540,7 @@ void DirIndexing::ResetVectorCounter(bool YesResetCounter = true)
 
 void DirIndexing::AddToRefreshCounter(uint16 ChangesToAddToRefreshCounter = {})
 {
-
 		DirIndexing::CountChangesSinceGridRefresh += ChangesToAddToRefreshCounter;
-		
-
-
 	return;
 }
 

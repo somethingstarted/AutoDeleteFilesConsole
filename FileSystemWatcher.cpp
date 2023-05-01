@@ -28,56 +28,80 @@ FileSystemWatcher::~FileSystemWatcher()
   
     if (directoryHandle_ != nullptr && directoryHandle_ != INVALID_HANDLE_VALUE)
     {
-        logging_tool->AppendToLog("\t\tdirectoryHandle_ != nullptr && directoryHandle_ != INVALID_HANDLE_VALUE \n\t\t\t>>>> CloseHandle(directoryHandle_)", OutputType::_INFO, WhichClassUsed::FileSystemWatcher_Which);
+        logging_tool->AppendToLog("\tdirectoryHandle_ != nullptr && directoryHandle_ != INVALID_HANDLE_VALUE \n\t>>>> CloseHandle(directoryHandle_)", OutputType::EXITING_APP, WhichClassUsed::FileSystemWatcher_Which);
         CloseHandle(directoryHandle_);
     }
  
     if (directoryHandle_ != nullptr) 
     {
-        logging_tool->AppendToLog("\t\tdirectoryHandle_ != nullptr \n\t\t\t>>>> CloseHandle(directoryHandle_)", OutputType::_INFO, WhichClassUsed::FileSystemWatcher_Which);
+        logging_tool->AppendToLog("\tdirectoryHandle_ != nullptr \n\t>>>> CloseHandle(directoryHandle_)", OutputType::EXITING_APP, WhichClassUsed::FileSystemWatcher_Which);
         CloseHandle(directoryHandle_);
     }
     if (exitEvent_ != nullptr) 
     {
-        logging_tool->AppendToLog("\t\texitEvent_ != nullptr \n\t\t\t>>>> SetEvent(exitEvent_)", OutputType::_INFO, WhichClassUsed::FileSystemWatcher_Which);
+        logging_tool->AppendToLog("\texitEvent_ != nullptr \n\t>>>> SetEvent(exitEvent_)", OutputType::_INFO, WhichClassUsed::FileSystemWatcher_Which);
         SetEvent(exitEvent_);
     }
     if (threadHandle_ != nullptr) 
     {
-        logging_tool->AppendToLog("\t\tthreadHandle_ != nullptr \n\t\t\t>>>> WaitForSingleObject(threadHandle_, INFINITE)", OutputType::_INFO);
+        logging_tool->AppendToLog("\tthreadHandle_ != nullptr \n\t>>>> WaitForSingleObject(threadHandle_, INFINITE)", OutputType::_INFO);
         WaitForSingleObject(threadHandle_, INFINITE);
         CloseHandle(threadHandle_);
     }
     if (exitEvent_ != nullptr) 
     {
-        logging_tool->AppendToLog("\t\texitEvent_ != nullptr \n\t\t\t>>>> CloseHandle(exitEvent_)", OutputType::_INFO, WhichClassUsed::FileSystemWatcher_Which);
+        logging_tool->AppendToLog("\texitEvent_ != nullptr \n\t>>>> CloseHandle(exitEvent_)", OutputType::_INFO, WhichClassUsed::FileSystemWatcher_Which);
         CloseHandle(exitEvent_);
     }
 }
 
 
-
+int FileSystemWatcher::GetFolderIndexSize()
+{
+    int size = indexer.FolderIndex2.size();
+    return size;
+}
 
 
 DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
 {
 
     FileSystemWatcher* watcher = static_cast<FileSystemWatcher*>(param);
-    if (!watcher)
-    {
-        watcher->logging_tool->AppendToLog("FileSystemWatcher pointer is null. Exiting StaticWatcherThread.", OutputType::_logERROR, WhichClassUsed::FileSystemWatcher_Which);
-        return 1; // Return an error code to indicate the issue
-    }
+    //if (!watcher)
+    //{
+    //    watcher->logging_tool->AppendToLog(R"(FileSystemWatcher pointer is null. Exiting StaticWatcherThread.)", OutputType::_logERROR, WhichClassUsed::FileSystemWatcher_Which);
+    //    return GetLastError(); // Return an error code to indicate the issue
+    //}
 
 
     const DWORD bufferSize = 1024;
     BYTE buffer[bufferSize] = { 0 };
     DWORD bytesRead = 0;
 
+    if (GetLastError() != 0)
+    {
+        //Get the error message ID, if any.
+        DWORD errorMessageID = ::GetLastError();
+        std::stringstream thiserror;
+        thiserror << "watcher thread started. last error though: " << GetLastError() << std::endl;
+        //watcher->logging_tool->AppendToLog(thiserror.str(), OutputType::_logERROR, WhichClassUsed::FileSystemWatcher_Which);
+        LPSTR messageBuffer = nullptr;
 
-    std::stringstream thiserror;
-    thiserror << "watcher thread started. last error: " << GetLastError() << std::endl;
-    watcher->logging_tool->AppendToLog(thiserror.str(), OutputType::_logERROR, WhichClassUsed::FileSystemWatcher_Which);
+        //Ask Win32 to give us the string version of that message ID.
+        //The parameters we pass in, tell Win32 to create the buffer that holds the message for us (because we don't yet know how long the message string will be).
+        size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+        //Copy the error message into a std::string.
+        std::string message(messageBuffer, size);
+        std::stringstream errcodenum = {};
+        errcodenum << "\tError Code Num:  " << GetLastError();
+        watcher->logging_tool->AppendToLog(message + errcodenum.str(), OutputType::_logERROR, WhichClassUsed::FileSystemWatcher_Which);
+
+        //Free the Win32's string's buffer.
+        LocalFree(messageBuffer);
+    }
+    
 
    int DoWhileCounter{};
 
@@ -86,13 +110,14 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
    watcher->logging_tool->AppendToLog("if (watcher->indexer.FolderIndex2.empty())...", OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
    //get FolderIndex2's ram location and print to logging tool
    std::stringstream ss;
-   ss << "FolderIndex2's ram location: " << &watcher->indexer.FolderIndex2 << std::endl;
+   int siiiize = (watcher->indexer.FolderIndex2.size());
+   ss << "FolderIndex2's ram location: " << &watcher->indexer.FolderIndex2 << "\tvec size: " << siiiize << std::endl;
    watcher->logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
 
     for (auto& i : watcher->indexer.FolderIndex2)
     {   //get file id and file name from DirIndexing::FolderIndex2.FileIDnumber 
         std::stringstream ss;
-        ss << "FileIDnumber: " << i.FileIDnumber << " FileName: " << i.FileName << std::endl;
+        ss << "For (auto&...) FileIDnumber: " << i.FileIDnumber << " FileName: " << i.FileName << std::endl;
         watcher->logging_tool -> AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
 		
 	}           //end of logging
@@ -103,9 +128,10 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
     {
      
         watcher->logging_tool->AppendToLog("\t\tempty if initiated.", OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
-		return 0;
+        
+		//return 0;
 	}
-    else
+    else 
     {
         watcher->logging_tool->AppendToLog("\t\tnot empty. else {... ", OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
         do
@@ -153,7 +179,8 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
 
                 do
                 {
-                    watcher->logging_tool->AppendToLog("\t\t\tdo", OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+                    watcher->logging_tool->AppendToLog("\t\tdo", OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+
                     fni = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(buffer + offset);
                     std::wstring fileName(fni->FileName, fni->FileNameLength / sizeof(wchar_t));
 
@@ -166,17 +193,19 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
             else
             {
                 watcher->logging_tool->AppendToLog("\t\telse", OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+
                 DWORD error = GetLastError();
                 std::cerr << "ReadDirectoryChangesW failed: " << error << std::endl;
                 std::stringstream thiserror;
                 thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
+
                 watcher->logging_tool->AppendToLog(thiserror.str(), OutputType::_logERROR, WhichClassUsed::FileSystemWatcher_Which);
 
                 //recoverable errors go here - maybe just one if, catch all errors, and then print all errors to log?
                 if (error == 5 || error == 6)
                 {
-                    // Sleep for 1 second and try again
-                    //Sleep(1000);
+ 
+                    wxSleep(1); //second
 
 
                     continue;
@@ -259,26 +288,43 @@ void FileSystemWatcher::OnFileSystemChange(DWORD action, const std::wstring& fil
     std::wcout << L"Action: " << action << L", File: " << fileName << std::endl;
     logging_tool->AppendToLog("void FileSystemWatcher::OnFileSystemChange(DWORD action, const std::wstring& fileName) started", OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
             //need to get these working again, because that's what will make the program keep working. i think this is why it's crashing. 
-    /*switch (action)
-    {
-	case FILE_ACTION_ADDED:
-		std::wcout << L"File added: " << fileName << std::endl;
-		break;
-	case FILE_ACTION_REMOVED:
-		std::wcout << L"File removed: " << fileName << std::endl;
-		break;
-	case FILE_ACTION_MODIFIED:
-		std::wcout << L"File modified: " << fileName << std::endl;
-		break;
-	case FILE_ACTION_RENAMED_OLD_NAME:
-		std::wcout << L"File renamed (old name): " << fileName << std::endl;
-		break;
-	case FILE_ACTION_RENAMED_NEW_NAME:
-		std::wcout << L"File renamed (new name): " << fileName << std::endl;
-		break;
-	default:
-		std::wcout << L"Unknown action: " << action << std::endl;
-		break;
-	}*/
+    //write quick windows alert box 
+    wxMessageBox("OnFileSystemChange", "", wxICON_INFORMATION);
+
+     //rewrite this but instead of std::wcout, use logging_tool->AppendToLog
+    std::stringstream ss;
+     switch (action)
+     {
+         case FILE_ACTION_ADDED:
+             
+             ss << "File added: " << fileName << std::endl;
+             logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+			 break;
+         case FILE_ACTION_REMOVED:
+            
+             ss << "File removed: " << fileName << std::endl;
+             logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+             break;
+        case FILE_ACTION_MODIFIED:
+			
+			 ss << "File modified: " << fileName << std::endl;
+			 logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+			 break;
+		 case FILE_ACTION_RENAMED_OLD_NAME:
+			
+			 ss << "File renamed (old name): " << fileName << std::endl;
+			 logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+			 break;
+		 case FILE_ACTION_RENAMED_NEW_NAME:
+			
+			 ss << "File renamed (new name): " << fileName << std::endl;
+			 logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+			 break;
+		 default:
+			
+			 ss << "Unknown action: " << action << std::endl;
+			 logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+			 break;
+     }
 
 }
