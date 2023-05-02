@@ -25,17 +25,20 @@ bool AutoDeleteFiles::OnInit() {
 	logging_tool->AppendToLog("Showing frame", OutputType::VERBOSE, WhichClassUsed::AutoDeleteFiles_Which);
 	frame->Show(true);
 	logging_tool->AppendToLog("Starting FileSystemWatcher", OutputType::VERBOSE, WhichClassUsed::AutoDeleteFiles_Which);
+	
 	frame->StartFileSystemWatcher();
 	//frame->StartFileSystemWatcher();
 
-	
-	 
+ 
+	//start ThreadManager::Entry()
+	frame->StartThreadManager();
 
 	
 
 	return true;
 }
 
+//CREATE StartThreadManager();
 
 
 wxIMPLEMENT_APP(AutoDeleteFiles); //only do once. 

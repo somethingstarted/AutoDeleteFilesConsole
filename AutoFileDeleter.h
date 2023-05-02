@@ -2,6 +2,9 @@
 
 #include <wx/wx.h>
 #include "LoggingTool.h"
+#include "ThreadManager.h"
+#include "FileSystemWatcher.h"
+
 
 class LoggingTool;
 
@@ -12,5 +15,7 @@ public:
 
 private:
 	LoggingTool* logging_tool{};
+	WatcherThread* m_WatcherThread;
+	ThreadManager* m_ThreadManager;
 };
 
