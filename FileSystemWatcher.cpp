@@ -103,7 +103,7 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
     }
     
 
-   int DoWhileCounter{};
+
 
     //check to see if DirIndexing::FolderIndex2 is empty 
                 //long to see if it is empty too
@@ -113,7 +113,8 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
    int siiiize = (watcher->indexer.FolderIndex2.size());
    ss << "FolderIndex2's ram location: " << &watcher->indexer.FolderIndex2 << "\tvec size: " << siiiize << std::endl;
    watcher->logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
-
+   
+   int DoWhileCounter{};
     for (auto& i : watcher->indexer.FolderIndex2)
     {   //get file id and file name from DirIndexing::FolderIndex2.FileIDnumber 
         std::stringstream ss;
@@ -250,7 +251,7 @@ void FileSystemWatcher::StartMonitoring()
 
 
     //threadHandle_ = CreateThread(nullptr, 0, StaticWatcherThread, this, 0, nullptr);
-    WatcherThread* thread = new WatcherThread(this);
+    //WatcherThread* thread = new WatcherThread(this);
 
 
     if (thread == nullptr)

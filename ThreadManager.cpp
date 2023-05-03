@@ -10,6 +10,7 @@ ThreadManager::~ThreadManager()
 {
 }
 
+
 wxThread::ExitCode ThreadManager::Entry()
 {
     while (ShouldBeWatchingThreads == true)

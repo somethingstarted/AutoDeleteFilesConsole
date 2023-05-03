@@ -4,6 +4,7 @@
 
 
 
+
 bool AutoDeleteFiles::OnInit() {
 	logging_tool->AppendToLog("AutoDeleteFiles::OnInit()", OutputType::SkipLine, WhichClassUsed::AutoDeleteFiles_Which); //never delete. 
 
@@ -30,8 +31,20 @@ bool AutoDeleteFiles::OnInit() {
 	//frame->StartFileSystemWatcher();
 
  
-	//start ThreadManager::Entry()
-	frame->StartThreadManager();
+	// Start the WatcherThread
+	WatcherThread* watcherThread = new WatcherThread(&fswatcher);
+	watcherThread->Create();
+	watcherThread->Run();
+	// Start the ThreadManager
+	//ThreadManager* threadManager = new ThreadManager(m_WatcherThread, &fswatcher);
+	//threadManager->Create();
+	//threadManager->Run();
+
+	ThreadManager* threadManager = new ThreadManager(m_WatcherThread, &fswatcher);
+	threadManager->Create();
+	threadManager->Run();
+
+
 
 	
 

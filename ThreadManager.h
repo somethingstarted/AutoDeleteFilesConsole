@@ -15,8 +15,8 @@ class ThreadManager : public wxThread
 
 public:
     ThreadManager(WatcherThread* threadToMonitor, FileSystemWatcher* fileSystemWatcher);
-        
     virtual ~ThreadManager();
+    void StartThreadManager();
 
 protected:
     wxThread::ExitCode Entry();

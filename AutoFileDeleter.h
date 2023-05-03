@@ -4,7 +4,7 @@
 #include "LoggingTool.h"
 #include "ThreadManager.h"
 #include "FileSystemWatcher.h"
-
+#include "ThreadManager.h"
 
 class LoggingTool;
 
