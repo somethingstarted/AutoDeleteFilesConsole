@@ -36,3 +36,89 @@
 2023-04-20 05:29:06.6282981	INFO	deleted a FileSystemWatcher thread
 2023-04-20 05:29:07.4025599	ERROR	watcher thread started. last error though: 0
 
+
+
+*** 	 *** application reopened at:	2023-05-07 06:18:26.9845142	   ***
+2023-05-07 06:18:26.9858837	AutoDeleteFiles		VERBOSE	Instantiating FileSystemWatcher
+2023-05-07 06:18:26.9862194	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 06:18:26.9865095	AutoDeleteFiles		VERBOSE	Instantiating FileDeleterFrame
+2023-05-07 06:18:27.0114414	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 06:18:27.0236698	DirectoryIndexing	VERBOSE	Checking for deleted files in vector.
+2023-05-07 06:18:27.0240535	DirectoryIndexing	VECTOR	Before iterating, CreateListFromFiles > FolderIndex2's RAM ID: 00000089A755F3B0vec size: 0
+2023-05-07 06:18:27.0287861	DirectoryIndexing	VECTOR	**AFTER iterating, CreateListFromFiles > FolderIndex2's RAM ID: 00000089A755F3B0vec size: 0
+2023-05-07 06:18:27.0292745	DirectoryIndexing	SYS_INFO	Size Of Disk	        1,906,745 GB
+Avaliable Space:	          349,993 GB
+Disk Percent used:	               81%
+
+2023-05-07 06:18:27.0514931	AutoDeleteFiles		VERBOSE	Showing frame
+2023-05-07 06:18:27.1072012	AutoDeleteFiles		VERBOSE	Starting FileSystemWatcher
+2023-05-07 06:18:27.1077740	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 06:18:27.1081143	FileSystemWatcher	VERBOSE	void FileSystemWatcher::StartMonitoring() started
+2023-05-07 06:18:27.1085781	WatcherThread		VERBOSE	WatcherThread::WatcherThread
+2023-05-07 06:18:27.1094814	WatcherThread		VERBOSE	WatcherThread::Entry
+
+
+*** 	 *** application reopened at:	2023-05-07 06:34:30.9782765	   ***
+2023-05-07 06:34:30.9791092	AutoDeleteFiles		VERBOSE	Instantiating FileSystemWatcher
+2023-05-07 06:34:30.9794757	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 06:34:30.9797927	AutoDeleteFiles		VERBOSE	Instantiating FileDeleterFrame
+2023-05-07 06:34:31.0027087	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 06:34:31.0173994	DirectoryIndexing	VERBOSE	Checking for deleted files in vector.
+2023-05-07 06:34:31.0177930	DirectoryIndexing	VECTOR	Before iterating, CreateListFromFiles > FolderIndex2's RAM ID: 0000006DECD0EE40vec size: 0
+2023-05-07 06:34:31.0225362	DirectoryIndexing	VECTOR	**AFTER iterating, CreateListFromFiles > FolderIndex2's RAM ID: 0000006DECD0EE40vec size: 0
+2023-05-07 06:34:31.0232557	DirectoryIndexing	SYS_INFO	Size Of Disk	        1,906,745 GB
+Avaliable Space:	          349,288 GB
+Disk Percent used:	               81%
+
+2023-05-07 06:34:31.0352236	AutoDeleteFiles		VERBOSE	Showing frame
+2023-05-07 06:34:31.0762101	AutoDeleteFiles		VERBOSE	Starting FileSystemWatcher
+2023-05-07 06:34:31.0766739	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 06:34:31.0770218	FileSystemWatcher	VERBOSE	void FileSystemWatcher::StartMonitoring() started
+2023-05-07 06:34:31.0773855	WatcherThread		VERBOSE	WatcherThread::WatcherThread
+2023-05-07 06:34:31.0781220	WatcherThread		VERBOSE	WatcherThread::Entry
+
+
+*** 	 *** application reopened at:	2023-05-07 07:08:07.5301537	   ***
+2023-05-07 07:08:07.5312223	AutoDeleteFiles		VERBOSE	Instantiating FileSystemWatcher
+2023-05-07 07:08:07.5315923	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 07:08:07.5319170	AutoDeleteFiles		VERBOSE	Instantiating FileDeleterFrame
+2023-05-07 07:08:07.5542415	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 07:08:07.5701272	DirectoryIndexing	VERBOSE	Checking for deleted files in vector.
+2023-05-07 07:08:07.5705144	DirectoryIndexing	VECTOR	Before iterating, CreateListFromFiles > FolderIndex2's RAM ID: 00000035711EECB0vec size: 0
+2023-05-07 07:08:07.5750964	DirectoryIndexing	VECTOR	**AFTER iterating, CreateListFromFiles > FolderIndex2's RAM ID: 00000035711EECB0vec size: 0
+2023-05-07 07:08:07.5757951	DirectoryIndexing	SYS_INFO	Size Of Disk	        1,906,745 GB
+Avaliable Space:	          349,048 GB
+Disk Percent used:	               81%
+
+2023-05-07 07:08:07.5881407	AutoDeleteFiles		VERBOSE	Showing frame
+2023-05-07 07:08:07.6289491	AutoDeleteFiles		VERBOSE	Starting FileSystemWatcher
+2023-05-07 07:08:07.6294257	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 07:08:07.6297439	FileSystemWatcher	VERBOSE	void FileSystemWatcher::StartMonitoring() started
+2023-05-07 07:08:07.6301403	WatcherThread		VERBOSE	WatcherThread::WatcherThread
+2023-05-07 07:08:07.6310409	WatcherThread		VERBOSE	WatcherThread::Entry
+2023-05-07 07:08:07.6316652	FileSystemWatcher	ERROR	Cannot create a file when that file already exists.
+	Error Code Num:  183
+2023-05-07 07:08:07.6320142	FileSystemWatcher	VERBOSE	if (watcher->indexer.FolderIndex2.empty())...
+
+
+*** 	 *** application reopened at:	2023-05-07 07:10:24.7809322	   ***
+2023-05-07 07:10:24.7819391	AutoDeleteFiles		VERBOSE	Instantiating FileSystemWatcher
+2023-05-07 07:10:24.7822636	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 07:10:24.7825870	AutoDeleteFiles		VERBOSE	Instantiating FileDeleterFrame
+2023-05-07 07:10:24.8039790	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 07:10:24.8184617	DirectoryIndexing	VERBOSE	Checking for deleted files in vector.
+2023-05-07 07:10:24.8188387	DirectoryIndexing	VECTOR	Before iterating, CreateListFromFiles > FolderIndex2's RAM ID: 000000875F3BF330vec size: 0
+2023-05-07 07:10:24.8230568	DirectoryIndexing	VECTOR	**AFTER iterating, CreateListFromFiles > FolderIndex2's RAM ID: 000000875F3BF330vec size: 0
+2023-05-07 07:10:24.8236325	DirectoryIndexing	SYS_INFO	Size Of Disk	        1,906,745 GB
+Avaliable Space:	          348,893 GB
+Disk Percent used:	               81%
+
+2023-05-07 07:10:24.8351510	AutoDeleteFiles		VERBOSE	Showing frame
+2023-05-07 07:10:24.8747531	AutoDeleteFiles		VERBOSE	Starting FileSystemWatcher
+2023-05-07 07:10:24.8752347	FileSystemWatcher	INFO			 ** commented out >>> FileSystemWatcher::FileSystemWatcher()
+2023-05-07 07:10:24.8755569	FileSystemWatcher	VERBOSE	void FileSystemWatcher::StartMonitoring() started
+2023-05-07 07:10:24.8759218	WatcherThread		VERBOSE	WatcherThread::WatcherThread
+2023-05-07 07:10:24.8765949	WatcherThread		VERBOSE	WatcherThread::Entry
+2023-05-07 07:10:24.8772371	FileSystemWatcher	ERROR	Cannot create a file when that file already exists.
+	Error Code Num:  183
+2023-05-07 07:10:24.8776300	FileSystemWatcher	VERBOSE	if (watcher->indexer.FolderIndex2.empty())...

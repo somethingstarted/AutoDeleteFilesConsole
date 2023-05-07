@@ -5,8 +5,10 @@
 //#include "ThreadManager.h"
 #include "FileSystemWatcher.h"
 //#include "ThreadManager.h"
+#include "WatcherThread.h"
 
 class LoggingTool;
+//class WatcherThread;
 
 class AutoDeleteFiles : public wxApp 
 {
@@ -15,7 +17,7 @@ public:
 
 private:
 	LoggingTool* logging_tool{};
-	WatcherThread* m_WatcherThread{};
+	WatcherThread* watcher_Thread{};
 	//ThreadManager* m_ThreadManager;
 };
 

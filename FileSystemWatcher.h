@@ -8,10 +8,10 @@
 
 #include "DirectoryIndexer.h"
 #include "FileDeleterFrame.h"
-#include "WatcherThread.h"
+//#include "WatcherThread.h"
 #include "LoggingTool.h"
 
-
+class WatcherThread;
 class FileDeleterFrame;
 class DirectoryIndexer;
 class Formatting;
@@ -47,7 +47,7 @@ private:
 
     LoggingTool* logging_tool{};
 
-    WatcherThread* m_thread;
+    WatcherThread* m_thread{};
     
 };
 

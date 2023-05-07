@@ -58,7 +58,11 @@ FileSystemWatcher::~FileSystemWatcher()
 
 int FileSystemWatcher::GetFolderIndexSize()
 {
+    
     int size = indexer.FolderIndex2.size();
+            std::stringstream ss;
+            ss << "FolderIndex2 size: " << size;
+            logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
     return size;
 }
 
@@ -115,13 +119,13 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
    watcher->logging_tool->AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
    
    int DoWhileCounter{};
-    for (auto& i : watcher->indexer.FolderIndex2)
-    {   //get file id and file name from DirIndexing::FolderIndex2.FileIDnumber 
-        std::stringstream ss;
-        ss << "For (auto&...) FileIDnumber: " << i.FileIDnumber << " FileName: " << i.FileName << std::endl;
-        watcher->logging_tool -> AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
-		
-	}           //end of logging
+ //   for (auto& i : watcher->indexer.FolderIndex2)
+ //   {   //get file id and file name from DirIndexing::FolderIndex2.FileIDnumber 
+ //       std::stringstream ss;
+ //       ss << "For (auto&...) FileIDnumber: " << i.FileIDnumber << " FileName: " << i.FileName << std::endl;
+ //       watcher->logging_tool -> AppendToLog(ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+	//	
+	//}           //end of logging
                 //do the real work now. 
 
     if (watcher->indexer.FolderIndex2.empty())
@@ -220,7 +224,9 @@ DWORD WINAPI FileSystemWatcher::StaticWatcherThread(LPVOID param)
     }
     watcher->FileSystemIsWatched = false;
 
-    watcher->logging_tool->AppendToLog(" watcher->FileSystemIsWatched = false;");
+    watcher->logging_tool->AppendToLog("51518 watcher->FileSystemIsWatched = false;");  //it's crashing because the thread isn't being handled,
+                                                                                        //and it is expecting something from the thread. 
+                                                                                        //fix this, then fix the thread problems. 
     
 
 
@@ -255,34 +261,34 @@ void FileSystemWatcher::StartMonitoring()
 
  //not needed anymore. 
         //remove, and find a way to make StartMonitoring accomplish the same thing
-    if (thread == nullptr)
-    {
-        logging_tool->AppendToLog("thread == nullptr\tFailed to create WatcherThread instance", OutputType::_WARNING, WhichClassUsed::FileSystemWatcher_Which);
-        return;
-    }
-    if (thread->Create() == wxTHREAD_NO_ERROR)
-    {
-        auto ID{};
-        ID = thread->GetId();
-        //convert ID to something suitable for logging tool
-        std::stringstream ss;
-        ss << ID;
-        logging_tool->AppendToLog("thread->Create() == wxTHREAD_NO_ERROR\tWatcherThread created successfully. Thread ID == " + ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
-        //get watcher thread thread id
+    //if (thread == nullptr)
+    //{
+    //    logging_tool->AppendToLog("thread == nullptr\tFailed to create WatcherThread instance", OutputType::_WARNING, WhichClassUsed::FileSystemWatcher_Which);
+    //    return;
+    //}
+    //if (thread->Create() == wxTHREAD_NO_ERROR)
+    //{
+    //    auto ID{};
+    //    ID = thread->GetId();
+    //    //convert ID to something suitable for logging tool
+    //    std::stringstream ss;
+    //    ss << ID;
+    //    logging_tool->AppendToLog("thread->Create() == wxTHREAD_NO_ERROR\tWatcherThread created successfully. Thread ID == " + ss.str(), OutputType::VERBOSE, WhichClassUsed::FileSystemWatcher_Which);
+    //    //get watcher thread thread id
 
 
-        thread->Run();
-        
-    }
-    else
-    {
-        logging_tool->AppendToLog("thread->Create() != wxTHREAD_NO_ERROR\tFailed to create WatcherThread", OutputType::_logERROR, WhichClassUsed::FileSystemWatcher_Which);
-        // Handle thread creation error
-        std::stringstream thiserror;
-        thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
-        wxString thiserrror = thiserror.str();
-        
-    }
+    //    thread->Run();
+    //    
+    //}
+    //else
+    //{
+    //    logging_tool->AppendToLog("thread->Create() != wxTHREAD_NO_ERROR\tFailed to create WatcherThread", OutputType::_logERROR, WhichClassUsed::FileSystemWatcher_Which);
+    //    // Handle thread creation error
+    //    std::stringstream thiserror;
+    //    thiserror << "ReadDirectoryChangesW failed: " << GetLastError() << std::endl;
+    //    wxString thiserrror = thiserror.str();
+    //    
+    //}
 }
 
 void FileSystemWatcher::OnFileSystemChange(DWORD action, const std::wstring& fileName) 
