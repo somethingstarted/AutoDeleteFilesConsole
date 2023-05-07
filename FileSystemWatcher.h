@@ -29,7 +29,7 @@ public:
     bool FileSystemIsWatched{};
 
     //define "thread" from FileSystemWatcher.cpp
-    WatcherThread* thread;      //why is this both public AND private? 
+    //WatcherThread* thread;      //why is this both public AND private? 
     static DWORD WINAPI StaticWatcherThread(LPVOID param = {});
 
 private:

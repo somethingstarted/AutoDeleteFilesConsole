@@ -19,6 +19,7 @@
 #include "Formatting.h"
 #include "FileSystemWatcher.h"
 #include "LoggingTool.h"
+//#include "ThreadManager.h"
 
 
 class FileSystemWatcher;
@@ -60,6 +61,7 @@ private:
 	Formatting& formatting;
 	FileSystemWatcher& fswatcher;
 	LoggingTool* logging_tool{};
+	//ThreadManager* m_ThreadManager;
 
 	//if I need more then 256 colums i'll just... make it an int16. why the hell would i need more than 256 colums? i'm not remaking excel. 
 		//this is simpler than using bitwise math to do 1 through 8. 

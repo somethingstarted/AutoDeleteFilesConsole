@@ -4,29 +4,27 @@
 #include <wx/utils.h>
 #include <chrono>
 #include "LoggingTool.h"
-#include "WatcherThread.h"
-#include "FileSystemWatcher.h"
+//#include "WatcherThread.h"
+//#include "FileSystemWatcher.h"
 
 class WatcherThread;
+class FileSystemWatcher;
 
 class ThreadManager : public wxThread
 {
     bool ShouldBeWatchingThreads = true;
 
 public:
+    //__declspec(dllexport) ThreadManager(WatcherThread* threadToMonitor, FileSystemWatcher* fileSystemWatcher);
     ThreadManager(WatcherThread* threadToMonitor, FileSystemWatcher* fileSystemWatcher);
-    virtual ~ThreadManager();
-    void StartThreadManager();
-
-protected:
-    wxThread::ExitCode Entry();
+    virtual ~ThreadManager() {};
     
 
-
-
-
+protected:
+    virtual ExitCode Entry();
+    
 private:
-    WatcherThread* m_WatcherThread;
+    WatcherThread*      m_WatcherThread;
     FileSystemWatcher* m_fileSystemWatcher;
 };
 

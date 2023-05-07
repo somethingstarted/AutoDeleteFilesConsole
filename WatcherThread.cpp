@@ -1,5 +1,5 @@
 #include "WatcherThread.h"
-#include "FileSystemWatcher.h"
+
 
 WatcherThread::WatcherThread(FileSystemWatcher* fileSystemWatcher)
     : wxThread(wxTHREAD_JOINABLE), m_fileSystemWatcher(fileSystemWatcher)

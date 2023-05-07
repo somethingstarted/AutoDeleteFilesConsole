@@ -253,7 +253,8 @@ void FileSystemWatcher::StartMonitoring()
     //threadHandle_ = CreateThread(nullptr, 0, StaticWatcherThread, this, 0, nullptr);
     //WatcherThread* thread = new WatcherThread(this);
 
-
+ //not needed anymore. 
+        //remove, and find a way to make StartMonitoring accomplish the same thing
     if (thread == nullptr)
     {
         logging_tool->AppendToLog("thread == nullptr\tFailed to create WatcherThread instance", OutputType::_WARNING, WhichClassUsed::FileSystemWatcher_Which);
@@ -261,7 +262,8 @@ void FileSystemWatcher::StartMonitoring()
     }
     if (thread->Create() == wxTHREAD_NO_ERROR)
     {
-        auto ID = thread->GetId();
+        auto ID{};
+        ID = thread->GetId();
         //convert ID to something suitable for logging tool
         std::stringstream ss;
         ss << ID;

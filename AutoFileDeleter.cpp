@@ -35,14 +35,15 @@ bool AutoDeleteFiles::OnInit() {
 	WatcherThread* watcherThread = new WatcherThread(&fswatcher);
 	watcherThread->Create();
 	watcherThread->Run();
+
 	// Start the ThreadManager
 	//ThreadManager* threadManager = new ThreadManager(m_WatcherThread, &fswatcher);
 	//threadManager->Create();
 	//threadManager->Run();
 
-	ThreadManager* threadManager = new ThreadManager(m_WatcherThread, &fswatcher);
-	threadManager->Create();
-	threadManager->Run();
+	//ThreadManager* threadManager = new ThreadManager(m_WatcherThread, &fswatcher);
+	//threadManager->Create();
+	//threadManager->Run();
 
 
 
