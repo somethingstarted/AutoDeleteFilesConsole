@@ -3,6 +3,7 @@
 #include <fstream>
 #include <chrono>
 #include <functional>
+#include <Windows.h>
 //add csv libray, figure out how to install rapidcsv. 
 	//well, how to add it to the project as a dependency. 
 	//it could be a great way to keep track of files that 
@@ -68,6 +69,9 @@ public:
 
 	//char length of longest class name (for formatting class in WhichClassUsed)
 	static constexpr int8 MaxClassNameLength = 23;
+	std::stringstream LastErrorGotten{};
+private: 
+	
 };
 
 extern LoggingTool* logging_tool;

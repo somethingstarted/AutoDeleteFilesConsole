@@ -2,6 +2,7 @@
 #include "Formatting.h"
 
 
+
 void LoggingTool::AppendToLog(std::string TextForPrintingToLog, uint16 LogOutputType, uint16 WhichClassUsed )
 {
 
@@ -11,7 +12,19 @@ void LoggingTool::AppendToLog(std::string TextForPrintingToLog, uint16 LogOutput
     std::ofstream outputFile{};
     int LogFileVers{};
     std::exception e{};
-    
+    DWORD errorMessageID = GetLastError();
+    std::stringstream thiserror{};
+    std::stringstream errorbuffer{};
+
+    if (thiserror.str() == LastErrorGotten.str())
+    {
+        errorbuffer << thiserror.str() << "\t";
+    }
+    else
+    {
+        errorbuffer << "";
+    }
+
     //try to open the file, if can't, create a new one with same file name but incremented +01
     try 
     {
@@ -33,11 +46,12 @@ void LoggingTool::AppendToLog(std::string TextForPrintingToLog, uint16 LogOutput
     }
     else if (outputFile.is_open()) 
     {
-          outputFile << RightNow << "\t" << ClassReferenced(WhichClassUsed) << CheckOutputType(LogOutputType) << "\t" << TextForPrintingToLog << "\n";
+          outputFile << RightNow << "\t" << errorbuffer.str() << ClassReferenced(WhichClassUsed) << CheckOutputType(LogOutputType) << "\t" << TextForPrintingToLog << "\n";
            outputFile.close();
     }
   
 
+    LastErrorGotten << thiserror.str(); 
     return;
 }
 
