@@ -15,13 +15,13 @@ For security cam folders. it is supposed to automatically delete the least amoun
 please help me. i think this is a good idea. it could be useful in other circumstances- like plex libraries, or servers with lots of data, or scentific stuff. there's uses out there for something like this. 
 
 
-currently inoperable. the latest commit doesn't compile lol. 
+
 
 frameworks: 
   wxWidgets
   c++ 2020
 
-I'm in the middle of converting it from wxthread to jthread, because i like jthread better and since the project is young, now is the best time to redo that. but, in the process of switching from wxthread to jthread, i broke it. i broke it so bad. 
+I'm in the middle of converting it from wxthread to jthread, because i like jthread better and since the project is young, now is the best time to redo that. but, in the process of switching from wxthread to jthread. 
 
 
 
