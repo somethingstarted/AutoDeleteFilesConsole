@@ -1,5 +1,5 @@
 # AutoDeleteFilesConsole
-For security cam folders. it is supposed to automatically delete the least amount of files possible to keep the cameras recording, while maximizing file retention time. 
+For security cam folders, System32\Spool\PRINTERS (spooled files getting stuck) - it is supposed to automatically delete the least amount of files possible to keep the cameras recording, while maximizing file retention time. 
     a. i dont like how some programs manage files, especially the ones that generate loads of data without any proper cleanup. 
     b. i want the footage to last as long as it can, and every time the number of cameras or the types of cameras change, so does the math on how to maximize space usage on the hdd. 
     c. the goal of this program, once it gets to a functional state, is to do all that for you. 
